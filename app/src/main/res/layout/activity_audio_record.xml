@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <Button
+        android:id="@+id/start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:text="start" />
+
+    <Button
+        android:id="@+id/stop"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="stop"
+        android:layout_gravity="center_horizontal" />
+
+
+    <Button
+        android:id="@+id/btn_online_play"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="在线播放" />
+    <SeekBar
+        android:id="@+id/music_progress"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:max="100" />
+
+</LinearLayout>

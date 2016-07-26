@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="zone.com.videostudy.MainActivity">
+
+    <Button
+        android:id="@+id/system"
+        android:onClick="onClick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="调用其自带的播放器" />
+    <Button
+        android:id="@+id/video"
+        android:onClick="onClick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="使用VideoView来实现" />
+    <Button
+        android:id="@+id/surfaceView"
+        android:onClick="onClick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="使用MediaPlayer类和SurfaceView来实现，这种方式很灵活" />
+    <Button
+        android:id="@+id/videoRecord"
+        android:onClick="onClick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="视频录制" />
+    <Button
+        android:id="@+id/screenRecord"
+        android:onClick="onClick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="屏幕录制" />
+    <Button
+        android:id="@+id/audio"
+        android:onClick="onClick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="边录边放,用 AudioRecord AudioTrack" />
+    <Button
+        android:id="@+id/recordWeixin"
+        android:onClick="onClick"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="录音与播放,在线播放音乐缓冲等" />
+
+</LinearLayout>
