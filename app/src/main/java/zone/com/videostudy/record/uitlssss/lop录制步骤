@@ -1,0 +1,6 @@
+
+1.startActivityForResult
+
+2. 得到权限后  开启 service
+
+3. service开启后   onstart 里  创建  虚拟窗口，创建录制

@@ -1,0 +1,52 @@
+音频：
+AudioRecord(pcm wav 音量),AudioTrack(pcm播放)
+
+视频：
+安卓录屏的解决方案：
+1.MediaRecorder， MediaProjection
+activity 与service 关联
+activity  请求权限-> 在结果中得到 MediaProjectManager->
+
+service  intent->MediaProjectManager->startRecrod->stop
+
+activity 单独使用
+activity  请求权限-> 在结果中得到 MediaProjectManager->startRecrod->stop
+
+截张图片 CaptureActivity
+
+
+
+todo  解码MP4到surface上
+todo  学习 https://github.com/jiyangg/MediaPlaySimpleDemo；
+
+todo   MediaCodec MediaExtractor MediaMuxer
+demo1: MediaExtractor 提取一个视频的 一个音频的。合成一个MediaMuxer
+todo MP3音频 需要解码 在编码成MP4格式后 混入
+demo2: MediaCodec (音频编码 视频编码 各对应一个)
+            编码 图片数据 得到输出  放入 (需要 surface放入画面)
+            编码 音频数据 得到输出  放入
+
+todo 2.MediaProjection , MediaCodec和MediaMuxer
+
+todo  RecordActivity:录屏1操作 RecorderMp4Activity：录屏2操作，舍弃 然后对比下 那个使用起来更好。在优化下
+
+
+todo  surfaceView  等相关的类
+todo AndroidLiveRecord  openGLEncode openGLEncode
+
+
+todo 录制gif(
+恩下,进度条走时间，
+少于某个时间，则不算
+大于某个时间 松手 生成gif
+到头 生成gif）
+
+todo activity 与service封装
+
+todo  MediaPlayer VideoView  B站，编译文件
+
+todo  金山云直播 sdk接入尝试；
+
+
+todo  文件操作 假如写入的MP4 文件，未完成的时候结尾用temp,完结回归改成.mp4
+todo 这样我检查的时候 看看.mp4是否纯在就可以判断操作是否完成了

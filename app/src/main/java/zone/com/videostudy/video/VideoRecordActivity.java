@@ -8,9 +8,10 @@ import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.widget.Button;
+
+import and.utils.data.file2io2data.FileUtils;
+import and.utils.data.file2io2data.SDCardUtils;
 import zone.com.videostudy.R;
-import zone.com.videostudy.file2io2data.FileUtils;
-import zone.com.videostudy.file2io2data.SDCardUtils;
 import zone.com.videostudy.video.utils.CameraHelper;
 import zone.com.videostudy.video.utils.MovieRecorder;
 
@@ -84,7 +85,7 @@ public class VideoRecordActivity extends Activity {
 
     private void startRecord() {
         mMovieRecorder=new MovieRecorder(mCameraPreview,mCamera,
-                FileUtils.getFile(SDCardUtils.getSDCardDir(), "录制.mp4").getAbsolutePath());
+                FileUtils.getFile(SDCardUtils.getSDCardDir(),"VideoStudyHei",  "录制.mp4").getAbsolutePath());
         mMovieRecorder.startRecording(size);
     }
 

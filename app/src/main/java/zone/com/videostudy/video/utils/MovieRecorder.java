@@ -29,7 +29,8 @@ public class MovieRecorder {
      * @param savePath .mp4
      */
     public MovieRecorder(SurfaceView surfaceView, Camera mCamera, String savePath) {
-        if (mCamera==null||surfaceView==null||savePath==null||!new File(savePath).isFile())
+//        ||!new File(savePath).isFile()
+        if (mCamera==null||surfaceView==null||savePath==null)
             throw new IllegalArgumentException(" surfaceView,  mCamera,  savePath  may be null");
         this.surfaceView=surfaceView;
         this.mCamera=mCamera;

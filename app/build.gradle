@@ -4,6 +4,13 @@ android {
     compileSdkVersion 23
     buildToolsVersion "24.0.1"
 
+    sourceSets {
+        main {
+            assets.srcDirs = ['src/main/assets']
+//        jni.srcDirs = [] // This prevents the auto generation of Android.mk
+//        jniLibs.srcDir 'src/main/libs' // This is not necessary unless you have precompiled libraries in your project.
+        }
+    }
     defaultConfig {
         applicationId "zone.com.videostudy"
         minSdkVersion 16
@@ -23,4 +30,6 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.0.0'
+    compile 'com.github.luhaoaimama1:ZView:1.0.35'
+    compile 'com.github.luhaoaimama1:zone-sdk:1.0.91'
 }

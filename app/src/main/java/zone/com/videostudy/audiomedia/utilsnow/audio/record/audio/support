@@ -1,0 +1,21 @@
+1.支持录音，   //所有完毕后  汤姆猫变音，通过 原始数据 用AudioTrack 播放
+
+2.支持 转换格式  wav mp3?
+
+3.通过声音 获取音量
+
+4.支持 用AudioTrack  事实播放；
+
+
+
+AudioRecorder(file)
+.processData(FileProcess,VolumeProcess)
+//pcm 转 wav 或者 MP3这
+.start();//仅仅保持一个线程运行;
+如果是运行状态，则 返回一个error
+.stop();
+
+
+quit 是  循环读取
+
+is

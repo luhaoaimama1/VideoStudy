@@ -16,9 +16,10 @@ import android.widget.VideoView;
 
 import java.io.IOException;
 
+import and.utils.data.file2io2data.FileUtils;
+import and.utils.data.file2io2data.SDCardUtils;
 import zone.com.videostudy.R;
-import zone.com.videostudy.file2io2data.FileUtils;
-import zone.com.videostudy.file2io2data.SDCardUtils;
+
 //TODO 在线播放原理和音频在线播放一样
 public class VideoActivity extends AppCompatActivity implements View.OnClickListener {
 
