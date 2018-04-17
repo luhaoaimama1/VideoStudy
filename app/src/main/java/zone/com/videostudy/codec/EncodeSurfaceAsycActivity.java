@@ -12,6 +12,7 @@ import android.media.MediaMuxer;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Surface;
 import android.widget.Button;
@@ -32,9 +33,10 @@ import zone.com.videostudy.R;
 /**
  * MIT License
  * Copyright (c) [2018] [Zone]
+ *
+ *
  */
-
-public class EncodeSurfaceActivity extends Activity {
+public class EncodeSurfaceAsycActivity extends Activity   {
 
 
     @Bind(R.id.video)
@@ -62,8 +64,6 @@ public class EncodeSurfaceActivity extends Activity {
     @OnClick(R.id.bt_muxer)
     public void onViewClicked() {
         init();
-
-
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -72,14 +72,12 @@ public class EncodeSurfaceActivity extends Activity {
                     //绘图
                     renderFromSource(frameIndex);
                     //解码
-                    decode(false);
                     // 因为我就想录制5秒  5*25 =125
                     if (computePresentationTimeMs(++frameIndex) >5 * 1000 * 1000)
                         break;
                 }
                 //结尾编码
-                decode(true);
-                //release
+                mediaCodec.signalEndOfInputStream();
                 release();
             }
 
@@ -116,50 +114,6 @@ public class EncodeSurfaceActivity extends Activity {
         videoView.setVideoURI(Uri.fromFile(muxerFile));
         videoView.start();
         videoView.requestFocus();
-    }
-
-    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void decode(boolean endOfStream) {
-        if (endOfStream){
-            mediaCodec.signalEndOfInputStream();
-        }
-        ByteBuffer[] outputBuffers = mediaCodec.getOutputBuffers();
-        MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
-
-        while (true) {
-            int outputBufIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, 12000);
-            Log.d("hahaha", "frame:" + frameIndex+"\t "+ outputBufIndex);
-            if (outputBufIndex == MediaCodec.INFO_TRY_AGAIN_LATER) {
-                //正好 没数据了
-               break;
-            } else if(outputBufIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                MediaFormat newFormat = mediaCodec.getOutputFormat();
-                Log.d("hahaha", "encoder output format changed: " + newFormat);
-                writeTrackIndex = mMediaMuxer.addTrack(newFormat);
-                mMediaMuxer.start();
-            } else if (outputBufIndex == MediaCodec.INFO_OUTPUT_BUFFERS_CHANGED) {
-                //buffers 被更换了 todo 更换后 也给你了位置啊  是不是可以用这个呢？
-                outputBuffers = mediaCodec.getOutputBuffers();
-            } else {
-                Log.d("hahaha", "处理数据 --frame:" + frameIndex+"\t "+ outputBufIndex);
-                if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
-                    bufferInfo.size = 0;
-                }
-                ByteBuffer encodedData = outputBuffers[outputBufIndex];
-                if (bufferInfo.size != 0) {
-                    //todo  这里不需要写   如果他为了防止 bufferInfo.offset未设置 可以在bufferInfo里设置
-                    mMediaMuxer.writeSampleData(writeTrackIndex, encodedData, bufferInfo);
-                    Log.d("hahaha", "处理数据 --时间戳:" + bufferInfo.presentationTimeUs);
-                }
-                mediaCodec.releaseOutputBuffer(outputBufIndex, false);
-                //有点数据 但是有一半
-                if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                    Log.d("hahaha", "结束流" );
-                    break;
-                }
-            }
-        }
-
     }
 
     private void renderFromSource(int frameIndex) {
@@ -205,7 +159,7 @@ public class EncodeSurfaceActivity extends Activity {
         paint.setTextSize(50);
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void initMediaCodec() {
         try {
             //MediaFormat这个类是用来定义视频格式相关信息的
@@ -226,6 +180,7 @@ public class EncodeSurfaceActivity extends Activity {
 
 
             mediaCodec = MediaCodec.createEncoderByType("video/avc");
+            mediaCodec.setCallback(new Abc());
             mediaCodec.configure(mediaFormat, null, null, MediaCodec.CONFIGURE_FLAG_ENCODE);
             // 创建收集的surface
             surface = mediaCodec.createInputSurface();
@@ -235,4 +190,48 @@ public class EncodeSurfaceActivity extends Activity {
             e.printStackTrace();
         }
     }
+
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    class Abc extends MediaCodec.Callback{
+        @Override
+        public void onInputBufferAvailable(@NonNull MediaCodec codec, int index) {
+
+        }
+
+        @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+        @Override
+        public void onOutputBufferAvailable(@NonNull MediaCodec codec, int index, @NonNull MediaCodec.BufferInfo bufferInfo) {
+            Log.d("hahaha", "处理数据 --frame:" + frameIndex+"\t outputBufIndex"+ index);
+            if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
+                bufferInfo.size = 0;
+            }
+            ByteBuffer encodedData = codec.getOutputBuffer(index);
+            if (bufferInfo.size != 0) {
+                //todo  这里不需要写   如果他为了防止 bufferInfo.offset未设置 可以在bufferInfo里设置
+                Log.d("hahaha", "处理数据 --时间戳:" + bufferInfo.presentationTimeUs);
+                mMediaMuxer.writeSampleData(writeTrackIndex, encodedData, bufferInfo);
+            }
+            mediaCodec.releaseOutputBuffer(index, false);
+            //有点数据 但是有一半
+            if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
+                Log.d("hahaha", "结束流" );
+//            break;
+            }
+        }
+
+        @Override
+        public void onError(@NonNull MediaCodec codec, @NonNull MediaCodec.CodecException e) {
+
+        }
+
+        @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+        @Override
+        public void onOutputFormatChanged(@NonNull MediaCodec codec, @NonNull MediaFormat format) {
+            MediaFormat newFormat = mediaCodec.getOutputFormat();
+            Log.d("hahaha", "encoder output format changed: " + newFormat);
+            writeTrackIndex = mMediaMuxer.addTrack(newFormat);
+            mMediaMuxer.start();
+        }
+    }
+
 }

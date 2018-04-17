@@ -51,7 +51,7 @@ public class Extract2MuxerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_muxer);
         ButterKnife.bind(this);
-        SharedUtils.put("exist", false);
+//        SharedUtils.put("exist", false);
         if (!SharedUtils.get("exist", false))
             new Thread(new Runnable() {
                 @Override
@@ -240,6 +240,13 @@ public class Extract2MuxerActivity extends Activity {
                 }
             }
             return extractorWrapper;
+        }
+        public void release(){
+            if(extractor!=null){
+                extractor.release();
+                extractor=null;
+            }
+
         }
 
     }
