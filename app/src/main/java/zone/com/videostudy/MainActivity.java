@@ -11,8 +11,11 @@ import and.Configuration;
 import zone.com.videostudy.audiomedia.RecordingActivity;
 import zone.com.videostudy.audiomedia.RecordingAudioActivity;
 import zone.com.videostudy.codec.DecodeMP4Activity;
+import zone.com.videostudy.codec.DecodeMP4SelfActivity;
 import zone.com.videostudy.codec.EncodeSurfaceActivity;
+import zone.com.videostudy.codec.EncodeSurfaceAsyc2Activity;
 import zone.com.videostudy.codec.EncodeSurfaceAsycActivity;
+import zone.com.videostudy.codec.EncodeSurfaceAsyc_SelfActivity;
 import zone.com.videostudy.codec.Extract2MuxerActivity;
 import zone.com.videostudy.record.CaptureActivity;
 import zone.com.videostudy.record.RecorderMp4Activity;
@@ -74,13 +77,16 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this,Extract2MuxerActivity.class)  );
                 break;
             case R.id.bt_encode_surface:
-                startActivity(new Intent(this,EncodeSurfaceActivity.class)  );
+//                startActivity(new Intent(this,EncodeSurfaceActivity.class)  );
+                startActivity(new Intent(this, EncodeSurfaceAsyc2Activity.class)  );
                 break;
             case R.id.bt_encode_surface_asyc:
-                startActivity(new Intent(this,EncodeSurfaceAsycActivity.class)  );
+                //                startActivity(new Intent(this,EncodeSurfaceActivity.class)  );
+                startActivity(new Intent(this,EncodeSurfaceAsyc_SelfActivity.class)  );
                 break;
             case R.id.bt_mp4_decode:
-                startActivity(new Intent(this,DecodeMP4Activity.class)  );
+//                startActivity(new Intent(this,DecodeMP4Activity.class)  );
+                startActivity(new Intent(this,DecodeMP4SelfActivity.class)  );
                 break;
         }
 

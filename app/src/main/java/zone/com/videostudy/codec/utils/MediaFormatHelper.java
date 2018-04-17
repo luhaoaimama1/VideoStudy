@@ -23,6 +23,7 @@ public class MediaFormatHelper {
 
     private int mHeight, mWidth;
 
+
     public MediaFormatHelper() {
         //MediaFormat这个类是用来定义视频格式相关信息的
         //video/avc,这里的avc是高级视频编码Advanced Video Coding
@@ -44,5 +45,6 @@ public class MediaFormatHelper {
         format.setInteger(MediaFormat.KEY_I_FRAME_INTERVAL, IFRAME_INTERVAL);
 
         Log.d(TAG, "created video format: " + format);
+
     }
 }

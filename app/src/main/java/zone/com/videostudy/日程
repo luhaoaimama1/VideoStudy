@@ -17,19 +17,10 @@ activity  请求权限-> 在结果中得到 MediaProjectManager->startRecrod->st
 
 解码MP4到surface上
 
-todo 编码与解码 configure 最后的参数 0 是解码？  MediaCodec.CONFIGURE_FLAG_ENCODE 是编码？
-
-todo 异步使用！
-
-todo mediaCodec.dequeueInputBuffer(-1);可以用无限量等待   输出如果和输入在一个线程中的话 则不可无限等待；如果用两个线程的话则可以
-
-todo  结尾符号   mediaCodec.signalEndOfInputStream();输入是surface的
-todo 而输入不是surface 则  mediaCodec.queueInputBuffer(inputBufferIndex,0,0,0,MediaCodec.BUFFER_FLAG_END_OF_STREAM);
+封装  快速使用即可！
 
 
-todo  学习 MediaPlaySimpleDemo；
-
-todo 封装  快速使用即可！
+todo  学习 MediaPlaySimpleDemo； 仿作一个
 
 todo   MediaCodec MediaExtractor MediaMuxer
 demo1: MediaExtractor 提取一个视频的 一个音频的。合成一个MediaMuxer

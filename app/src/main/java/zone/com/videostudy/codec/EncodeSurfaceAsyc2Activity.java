@@ -35,7 +35,7 @@ import zone.com.videostudy.codec.utils.MediaCodecHelper;
  * Copyright (c) [2018] [Zone]
  */
 
-public class EncodeSurfaceActivity extends Activity {
+public class EncodeSurfaceAsyc2Activity extends Activity {
 
 
     @Bind(R.id.video)
@@ -60,40 +60,58 @@ public class EncodeSurfaceActivity extends Activity {
 
     Paint paint;
     int frameIndex = 0;
-
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @OnClick(R.id.bt_muxer)
     public void onViewClicked() {
         init();
-
-
+        count=0;
         new Thread(new Runnable() {
             @Override
             public void run() {
-                frameIndex = 0;
+                frameIndex=0;
                 while (true) {
                     //绘图
                     renderFromSource(frameIndex);
-                    //解码
-                    decode(false);
                     // 因为我就想录制5秒  5*25 =125
-                    if (computePresentationTimeMs(++frameIndex) > 5 * 1000 * 1000)
+                    if (computePresentationTimeMs(++frameIndex) >5 * 1000 * 1000)
                         break;
                 }
-                //结尾编码
-                decode(true);
+                helper.signalEndOfInputStream();
+//                mediaCodec.signalEndOfInputStream();
+                renderFromSource(1000);
+                renderFromSource(1001);
+                renderFromSource(1002);
+
+                count++;
                 //release
                 release();
+
             }
 
         }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                //解码
+                decode();
+                count++;
+                //release
+                release();
+            }
+        }).start();
+
 
     }
 
+    int count=0;
+
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void release() {
-        helper.release();
+        if(count<2) {
+            return;
+        }
         mediaCodec = null;
+        helper.release();
         if (mMediaMuxer != null) {
             mMediaMuxer.stop();
             mMediaMuxer.release();
@@ -111,7 +129,6 @@ public class EncodeSurfaceActivity extends Activity {
             }
         });
     }
-
     private void playMp4() {
         videoView.setMediaController(new MediaController(this));
         videoView.setVideoURI(Uri.fromFile(muxerFile));
@@ -120,20 +137,17 @@ public class EncodeSurfaceActivity extends Activity {
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
-    private void decode(boolean endOfStream) {
-        if (endOfStream) {
-            mediaCodec.signalEndOfInputStream();
-        }
+    private void decode() {
         ByteBuffer[] outputBuffers = mediaCodec.getOutputBuffers();
         MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
 
         while (true) {
-            int outputBufIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, 12000);
-            Log.d("hahaha", "frame:" + frameIndex + "\t " + outputBufIndex);
+            int outputBufIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, -1);
+            Log.d("hahaha", "frame:" + frameIndex+"\t outputBufIndex:"+ outputBufIndex);
             if (outputBufIndex == MediaCodec.INFO_TRY_AGAIN_LATER) {
                 //正好 没数据了
-                break;
-            } else if (outputBufIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
+               break;
+            } else if(outputBufIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                 MediaFormat newFormat = mediaCodec.getOutputFormat();
                 Log.d("hahaha", "encoder output format changed: " + newFormat);
                 writeTrackIndex = mMediaMuxer.addTrack(newFormat);
@@ -142,7 +156,7 @@ public class EncodeSurfaceActivity extends Activity {
                 //buffers 被更换了 todo 更换后 也给你了位置啊  是不是可以用这个呢？
                 outputBuffers = mediaCodec.getOutputBuffers();
             } else {
-                Log.d("hahaha", "处理数据 --frame:" + frameIndex + "\t " + outputBufIndex);
+                Log.d("hahaha", "处理数据 --frame:" + frameIndex+"\t "+ outputBufIndex);
                 if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
                     bufferInfo.size = 0;
                 }
@@ -155,7 +169,7 @@ public class EncodeSurfaceActivity extends Activity {
                 mediaCodec.releaseOutputBuffer(outputBufIndex, false);
                 //有点数据 但是有一半
                 if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0) {
-                    Log.d("hahaha", "结束流");
+                    Log.d("hahaha", "结束流" );
                     break;
                 }
             }
@@ -164,6 +178,7 @@ public class EncodeSurfaceActivity extends Activity {
     }
 
     private void renderFromSource(int frameIndex) {
+        Log.d("hahaha", "绘制 --frame:" + frameIndex);
         Canvas canvas = surface.lockCanvas(null);
         renderFrame(canvas, frameIndex);
         //绘制画布
@@ -226,14 +241,14 @@ public class EncodeSurfaceActivity extends Activity {
             mediaFormat.setInteger(MediaFormat.KEY_FRAME_RATE, 25);
 
 
-            helper = MediaCodecHelper.encode(mediaFormat)
+            helper=MediaCodecHelper.encode(mediaFormat)
                     .intputSurface(new MediaCodecHelper.IntputSurface() {
                         @Override
                         public void onCreate(Surface surface2) {
-                            surface = surface2;
+                            surface=surface2;
                         }
                     }).prepare();
-            mediaCodec = helper.getMediaCodec();
+            mediaCodec=helper.getMediaCodec();
         } catch (Exception e) {
             e.printStackTrace();
         }

@@ -42,8 +42,11 @@
         <activity android:name=".audiomedia.RecordingActivity"></activity>
         <activity android:name=".codec.Extract2MuxerActivity"></activity>
         <activity android:name=".codec.EncodeSurfaceActivity"></activity>
+        <activity android:name=".codec.EncodeSurfaceAsyc2Activity"></activity>
+        <activity android:name=".codec.EncodeSurfaceAsyc_SelfActivity"></activity>
         <activity android:name=".codec.EncodeSurfaceAsycActivity"></activity>
         <activity android:name=".codec.DecodeMP4Activity"></activity>
+        <activity android:name=".codec.DecodeMP4SelfActivity"></activity>
         <activity android:name=".audiomedia.RecordingAudioActivity"></activity>
         <activity android:name=".video.VideoRecordActivity"></activity>
         <activity android:name=".record.LopRecordActivity"></activity>

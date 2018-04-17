@@ -3,11 +3,9 @@ package zone.com.videostudy.codec;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.media.MediaCodec;
-import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.SurfaceView;
 
@@ -21,6 +19,7 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import zone.com.videostudy.R;
+import zone.com.videostudy.codec.utils.MediaCodecHelper;
 import zone.com.videostudy.utils.RawUtils;
 
 /**
@@ -36,6 +35,7 @@ public class DecodeMP4Activity extends Activity {
     SurfaceView surface;
     private MediaCodec mediaCodec;
     private Extract2MuxerActivity.ExtractorWrapper wrapper;
+    private MediaCodecHelper helper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -65,7 +65,7 @@ public class DecodeMP4Activity extends Activity {
                     if (inputWrite) {
                         int inputBufferIndex = mediaCodec.dequeueInputBuffer(-1);
                         Log.d("hahaha"," input inputBufferIndex:"+inputBufferIndex);
-                        if (inputBufferIndex > 0) {
+                        if (inputBufferIndex >=0) {
                             ByteBuffer byteBuffer = mediaCodec.getInputBuffer(inputBufferIndex);
                             int readSize = wrapper.extractor.readSampleData(byteBuffer, 0);
                             if (readSize >= 0) {
@@ -103,11 +103,8 @@ public class DecodeMP4Activity extends Activity {
 
     private void release() {
         wrapper.release();
-        if (mediaCodec != null) {
-            mediaCodec.stop();
-            mediaCodec.release();
-            mediaCodec = null;
-        }
+        helper.release();
+        mediaCodec=null;
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -118,20 +115,11 @@ public class DecodeMP4Activity extends Activity {
             wrapper.extractor.selectTrack(wrapper.trackIndex);
             Log.d("hahaha"," initMediaCodec mime:"+ wrapper.format.getString(MediaFormat.KEY_MIME));
 
-            mediaCodec = MediaCodec.createDecoderByType(wrapper.format.getString(MediaFormat.KEY_MIME));
 
-            //定义这个实例的格式，也就是上面我们定义的format，其他参数不用过于关注
-            //第一个参数将我们上面设置的format传进去
-            //第二个参数是Surface，如果我们需要读取MediaCodec编码后的数据就要传，但我们这里不需要所以传null
-            //第三个参数关于加解密的，我们不需要，传null
-            //第四个参数是一个确定的标志位，也就是我们现在传的这个
-//            mediaCodec.configure(wrapper.format, surface.getHolder().getSurface(),
-//                    null,0);
-            mediaCodec.configure(wrapper.format, surface.getHolder().getSurface(),
-                    null,MediaCodec.CONFIGURE_FLAG_ENCODE);
-
-
-            mediaCodec.start();
+            helper=MediaCodecHelper.decode(wrapper.format)
+                    .outputSurface( surface.getHolder().getSurface())
+                    .prepare();
+            mediaCodec=helper.getMediaCodec();
         } catch (Exception e) {
             e.printStackTrace();
         }
