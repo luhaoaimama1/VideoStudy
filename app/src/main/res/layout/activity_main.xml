@@ -55,12 +55,6 @@
         android:onClick="onClick"
         android:text="surface编码" />
     <Button
-        android:id="@+id/bt_encode_surface_asyc"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="surface编码并行" />
-    <Button
         android:id="@+id/bt_mp4_decode"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
