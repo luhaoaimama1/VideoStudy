@@ -45,4 +45,11 @@
         android:padding="10dp"
         android:text="播放录音pcm" />
 
+
+
+    <VideoView
+        android:id="@+id/video"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
 </LinearLayout>

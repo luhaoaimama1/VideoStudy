@@ -1,4 +1,4 @@
-package zone.com.videostudy.codec;
+package zone.com.videostudy.codec.codeexample;
 
 import android.media.MediaCodec;
 import android.media.MediaExtractor;

@@ -14,11 +14,19 @@ activity  请求权限-> 在结果中得到 MediaProjectManager->startRecrod->st
 
 截张图片 CaptureActivity
 
+todo 整理 wav实时转AAC（不能再用muxer） 和 wav文件转AAC文件；
 
 解码MP4到surface上
 
-封装  快速使用即可！
+todo   config.getChannelConfig()  16 进制   1代表16   而问单双通道则是1
+todo  做之前一定要检查  formate  debug的数据 粘贴后对比
 
+封装  快速使用即可！
+todo  注意  releaseOutputBuffer不释放  请求的话 -1请求的话会无线等待
+
+todo 支持 输入输出在一个线程中串联，     Extract2MuxerActivity 弄好他  bytebuffer的理解
+MediaFormat.KEY_MAX_INPUT_SIZE 设置 buffer数组的初始容量， 遇到读入的数据比数组大，可以改这个值 申请的会这么大。
+因为使用的过程中不能改容量
 
 todo  学习 MediaPlaySimpleDemo； 仿作一个
 
@@ -36,7 +44,6 @@ todo  RecordActivity:录屏1操作 RecorderMp4Activity：录屏2操作，舍弃 
 
 todo  surfaceView  等相关的类
 todo AndroidLiveRecord  openGLEncode openGLEncode
-
 
 todo 录制gif(
 恩下,进度条走时间，

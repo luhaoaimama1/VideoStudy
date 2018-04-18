@@ -1,132 +1,192 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.zone.view.FlowLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:context="zone.com.videostudy.MainActivity">
+    android:layout_height="match_parent">
 
-    <TextView
+    <com.zone.view.FlowLayout xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#D7F679"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="音频方面" />
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        tools:context="zone.com.videostudy.MainActivity">
 
-    <Button
-        android:id="@+id/audio"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="录音PCM" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#D7F679"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="音频方面" />
 
-    <Button
-        android:id="@+id/recordWeixin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="录音与播放,在线播放音乐缓冲等" />
+        <Button
+            android:id="@+id/audio"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="录音PCM" />
 
+        <Button
+            android:id="@+id/recordWeixin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="录音与播放,在线播放音乐缓冲等" />
 
-    <Button
-        android:id="@+id/screenRecord"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="5.0屏幕录制" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#D7F679"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="录屏 截屏相关" />
 
-    <Button
-        android:id="@+id/screenCapture"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="5.0屏幕截图" />
-    <Button
-        android:id="@+id/bt_extract_muxer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="轨道分离与合成" />
-    <Button
-        android:id="@+id/bt_encode_surface"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="surface编码" />
-    <Button
-        android:id="@+id/bt_mp4_decode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="mp4解码" />
+        <Button
+            android:id="@+id/screenRecord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="5.0屏幕录制" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#D7F679"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="todo" />
+        <Button
+            android:id="@+id/screenCapture"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="5.0屏幕截图" />
 
-    <Button
-        android:id="@+id/mediaPlayer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="音视频播放MediaPlayer" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#D7F679"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="编码器,Muxer合成器，MediaExtractor 轨道提取 方面的学习" />
+        <Button
+            android:id="@+id/bt_extract_muxer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="Muxer-轨道分离与合成" />
 
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#D7F679"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="系统播放器与Surface" />
-    <Button
-        android:id="@+id/system"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="调用其自带的播放器" />
-
-    <Button
-        android:id="@+id/video"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="使用VideoView来实现" />
-
-    <Button
-        android:id="@+id/surfaceView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="使用MediaPlayer类和SurfaceView来实现，这种方式很灵活" />
-
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#D7F679"
-        android:gravity="center"
-        android:padding="10dp"
-        android:text="视频录制方面" />
-
-    <Button
-        android:id="@+id/videoRecord"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="视频录制" />
+        <Button
+            android:id="@+id/bt_mp3_to_mp4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="Muxer-Mp3toMp4" />
 
 
-    <Button
-        android:id="@+id/screenRecordToMp4"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:onClick="onClick"
-        android:text="5.0屏幕录制转Mp4" />
+        <Button
+            android:id="@+id/bt_encodeMp4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="WAV编码mp4" />
+
+        <Button
+            android:id="@+id/bt_pcmtoMp4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="pcm实时编码AAC" />
 
 
 
-</com.zone.view.FlowLayout>
+        <Button
+            android:id="@+id/bt_wav_to_aac"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="Mp3/Wav转AAC文件" />
+
+        <Button
+            android:id="@+id/bt_encode_surface"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="surface编码" />
+
+        <Button
+            android:id="@+id/bt_mp4_decode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="mp4解码" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#D7F679"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="问题：Muxer合成wav格式,通过wav解码PCM 然后编码AAC 不知道为啥就是不行。但是编码阶段写入文件就是AAC" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#D74679"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="todo" />
+
+        <Button
+            android:id="@+id/mediaPlayer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="音视频播放MediaPlayer" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#D7F679"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="系统播放器与Surface" />
+
+        <Button
+            android:id="@+id/system"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="调用其自带的播放器" />
+
+        <Button
+            android:id="@+id/video"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="使用VideoView来实现" />
+
+        <Button
+            android:id="@+id/surfaceView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="使用MediaPlayer类和SurfaceView来实现，这种方式很灵活" />
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#D7F679"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="视频录制方面" />
+
+        <Button
+            android:id="@+id/videoRecord"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="视频录制" />
+
+
+        <Button
+            android:id="@+id/screenRecordToMp4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="5.0屏幕录制转Mp4" />
+
+
+    </com.zone.view.FlowLayout>
+</ScrollView>

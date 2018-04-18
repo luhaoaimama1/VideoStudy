@@ -3,6 +3,8 @@ package zone.com.videostudy.audiomedia.utilsnow.audio.play.audiotrack;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
+import android.media.MediaFormat;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 
@@ -38,6 +40,7 @@ public class AudioTrackHelper {
      * audioTrack.play();//开始播放
      * audioTrack.write(tmpBuf, 0, tmpBuf.length);
      * audioTrack.stop2release();
+     *
      * @param pcmFile
      * @return
      * @throws IOException
@@ -60,10 +63,10 @@ public class AudioTrackHelper {
     }
 
 
-    public  void release(){
-        if(audioTrack!=null){
+    public void release() {
+        if (audioTrack != null) {
             audioTrack.release();
-            audioTrack=null;
+            audioTrack = null;
         }
 
     }
@@ -75,5 +78,8 @@ public class AudioTrackHelper {
     public void setAudioTrack(AudioTrack audioTrack) {
         this.audioTrack = audioTrack;
     }
+
+
+
 
 }

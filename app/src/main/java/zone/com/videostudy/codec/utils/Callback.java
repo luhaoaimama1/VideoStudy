@@ -7,6 +7,8 @@ import android.support.annotation.NonNull;
 /**
  * MediaCodec callback interface. Used to notify the user asynchronously
  * of various MediaCodec events.
+ *
+ *
  */
 public interface Callback {
 
@@ -32,6 +34,7 @@ public interface Callback {
 
     /**
      * Called when the output format has changed
+     * format仅仅是对输出 有关系 输入没有关系！
      *
      * @param codec  The MediaCodec object.
      * @param format The new output format.

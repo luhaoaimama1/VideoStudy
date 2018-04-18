@@ -3,8 +3,6 @@ package zone.com.videostudy.codec;
 import android.annotation.TargetApi;
 import android.app.Activity;
 import android.media.MediaCodec;
-import android.media.MediaExtractor;
-import android.media.MediaFormat;
 import android.media.MediaMuxer;
 import android.net.Uri;
 import android.os.Build;
@@ -13,7 +11,9 @@ import android.util.Log;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -25,39 +25,45 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import zone.com.videostudy.R;
+import zone.com.videostudy.codec.utils.ExtractorWrapper;
 import zone.com.videostudy.utils.RawUtils;
 
 /**
  * MIT License
  * todo  mp3格式 解码后编码成 MP4格式 然后通过mux合成
+ * <p>
+ * 当画面 和 声音 时间录入不一致的时候，
+ * 声音时间长，画面保留最后一张图；
+ * 画面多出的那块没有声音
+ * <p>
  * Copyright (c) [2018] [Zone]
  */
 
 public class Extract2MuxerActivity extends Activity {
     private static final String TAG = "Extract2MuxerActivity";
     final String MP4NAME = "record_raw.mp4";
-//    final String MP3NAMe = "mkj.mp3";
-    final String MP3NAMe = "record.wav";
-//    final String MP3NAMe = "test_raw.mp3";
     File mp4 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", MP4NAME);
-    File mp3 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", MP3NAMe);
+    final String MP42_NAMe = "audio.mp4";
+    File mp4_2 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", MP42_NAMe);
     File muxer = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "muxerFile.mp4");
 
     @Bind(R.id.video)
     VideoView videoView;
+    private MediaMuxer mMediaMuxer;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_muxer);
         ButterKnife.bind(this);
-//        SharedUtils.put("exist", false);
+        SharedUtils.put("exist", false);
         if (!SharedUtils.get("exist", false))
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     RawUtils.copyFilesFromAssset(Extract2MuxerActivity.this, MP4NAME, mp4.getAbsolutePath());
-                    RawUtils.copyFilesFromAssset(Extract2MuxerActivity.this, MP3NAMe, mp3.getAbsolutePath());
+                    RawUtils.copyFilesFromAssset(Extract2MuxerActivity.this, MP42_NAMe, mp4_2.getAbsolutePath());
                     SharedUtils.put("exist", true);
                 }
             }).start();
@@ -68,13 +74,12 @@ public class Extract2MuxerActivity extends Activity {
         if (!SharedUtils.get("exist", false))
             ToastUtils.showShort(this, "文件未保存入sd卡");
         muxerMedia();
-        playMp4();
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void muxerMedia() {
         try {
-            MediaMuxer mMediaMuxer = new MediaMuxer(muxer.getAbsolutePath(),
+            mMediaMuxer = new MediaMuxer(muxer.getAbsolutePath(),
                     MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
 
 
@@ -85,27 +90,34 @@ public class Extract2MuxerActivity extends Activity {
             }
 
 
-            ExtractorWrapper audioWarper = ExtractorWrapper.getExtractor(mp3.getAbsolutePath(), ExtractorWrapper.AUDIO);
+            ExtractorWrapper audioWarper = ExtractorWrapper.getExtractor(mp4_2.getAbsolutePath(), ExtractorWrapper.AUDIO);
             if (audioWarper.trackIndex == -1) {
                 ToastUtils.showShort(this, "音频轨道未找到！");
                 return;
             }
 
-//            videoWapper.addTrackMuxer(mMediaMuxer);
+            videoWapper.addTrackMuxer(mMediaMuxer);
             audioWarper.addTrackMuxer(mMediaMuxer);
+
             mMediaMuxer.start();
 
-//            addTrack(mMediaMuxer, videoWapper);
+            addTrack(mMediaMuxer, videoWapper);
             addTrack(mMediaMuxer, audioWarper);
+
 
             // 释放MediaMuxer
             mMediaMuxer.stop();
             mMediaMuxer.release();
+            playMp4();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
     }
+
+    File aac = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "heihei.aac");
+    private FileOutputStream fos;
+    private BufferedOutputStream bos;
 
     //todo  增加时间功能
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -191,6 +203,10 @@ public class Extract2MuxerActivity extends Activity {
 //                }
 //            }
 
+            Log.d(TAG, "write  track  info size: " + info.size
+                    + " \t offset: " + info.offset
+                    + " \t presentationTimeUs: " + info.presentationTimeUs
+            );
             /**
              * 第一个参数是之前添加formate的轨道
              * 第二个是要写入的数据
@@ -203,52 +219,6 @@ public class Extract2MuxerActivity extends Activity {
         }
         warper.extractor.unselectTrack(warper.trackIndex);
         warper.extractor.release();
-    }
-
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public static class ExtractorWrapper {
-        public static final String VIDEO = "video/";
-        public static final String AUDIO = "audio/";
-
-        public boolean isAudio;
-        public MediaExtractor extractor;
-        public int trackIndex = -1;
-        public int muxTrackIndex = -1;
-        public MediaFormat format;
-
-        private ExtractorWrapper() {
-        }
-
-        public void addTrackMuxer(MediaMuxer muxer) {
-            muxTrackIndex = muxer.addTrack(format);
-        }
-
-        public static ExtractorWrapper getExtractor(String filePath, String contains) throws IOException {
-            ExtractorWrapper extractorWrapper = new ExtractorWrapper();
-            // 视频的MediaExtractor
-            MediaExtractor mVideoExtractor = new MediaExtractor();
-            extractorWrapper.extractor = mVideoExtractor;
-            mVideoExtractor.setDataSource(filePath);
-            for (int i = 0; i < mVideoExtractor.getTrackCount(); i++) {
-                MediaFormat format = mVideoExtractor.getTrackFormat(i);
-//查找是否支持编解码功能                new MediaCodecList(1).findDecoderForFormat(warper.format)
-                if (format.getString(MediaFormat.KEY_MIME).contains(contains)) {
-                    extractorWrapper.format = format;
-                    extractorWrapper.trackIndex = i;
-                    extractorWrapper.isAudio = format.getString(MediaFormat.KEY_MIME).contains(AUDIO);
-                    break;
-                }
-            }
-            return extractorWrapper;
-        }
-        public void release(){
-            if(extractor!=null){
-                extractor.release();
-                extractor=null;
-            }
-
-        }
-
     }
 
 

@@ -2,6 +2,8 @@ package zone.com.videostudy.codec.utils;
 
 import android.annotation.TargetApi;
 import android.media.MediaCodec;
+import android.media.MediaCodecInfo;
+import android.media.MediaCodecList;
 import android.media.MediaCrypto;
 import android.media.MediaFormat;
 import android.os.Build;
@@ -37,7 +39,7 @@ import and.utils.executor.ExecutorUtils;
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MediaCodecHelper {
 
-    private static final String TAG = "MediaCodecHelper";
+    private String TAG = "MediaCodecHelper";
     private MediaCodec mediaCodec;
     private boolean isEncode;
     private MediaFormat format;
@@ -82,17 +84,73 @@ public class MediaCodecHelper {
     }
 
 
-    public MediaCodecHelper prepare() throws IOException {
-        String type;
-        //创建一个MediaCodec的实例
-        if (isEncode) {
-            //todo 去找是否支持
-            mediaCodec = MediaCodec.createEncoderByType(type = format.getString(MediaFormat.KEY_MIME));
-            log("createEncoder  type:" + type);
-        } else {
+    /**
+     * 判断是否有支持指定mime类型的编码器
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private String findDecoderForFormat() {
+        return new MediaCodecList(1).findDecoderForFormat(format);
+    }
 
-            mediaCodec = MediaCodec.createDecoderByType(type = format.getString(MediaFormat.KEY_MIME));
-            log("createDecoder  type:" + type);
+    /**
+     * 判断是否有支持指定mime类型的编码器
+     */
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
+    private String findEncoderForFormat() {
+        return new MediaCodecList(1).findEncoderForFormat(format);
+    }
+
+    /**
+     * 遍历所有编解码器，返回第一个与指定MIME类型匹配的编码器
+     * 判断是否有支持指定mime类型的编码器
+     */
+    private MediaCodecInfo selectSupportCodec() {
+        int numCodecs = MediaCodecList.getCodecCount();
+        for (int i = 0; i < numCodecs; i++) {
+            MediaCodecInfo codecInfo = MediaCodecList.getCodecInfoAt(i);
+            // 判断是否为编码器，否则直接进入下一次循环
+            if (codecInfo.isEncoder() != isEncode) {
+                continue;
+            }
+            // 如果是编码器，判断是否支持Mime类型
+            String[] types = codecInfo.getSupportedTypes();
+            for (int j = 0; j < types.length; j++) {
+                if (types[j].equalsIgnoreCase(format.getString(MediaFormat.KEY_MIME))) {
+                    return codecInfo;
+                }
+            }
+        }
+        return null;
+    }
+
+    boolean isCreateByCodecName = false;
+
+    public MediaCodecHelper createByCodecName() {
+        isCreateByCodecName = true;
+        return this;
+    }
+
+
+    public MediaCodecHelper prepare() throws IOException {
+
+
+        String type;
+        if (isCreateByCodecName) {
+
+            MediaCodecInfo codeInfo = selectSupportCodec();
+            if (codeInfo == null)
+                throw new IllegalStateException("没有支持的编码器");
+            else
+                mediaCodec = MediaCodec.createByCodecName(codeInfo.getName());
+        } else {
+            //        //创建一个MediaCodec的实例
+            if (isEncode) {
+                mediaCodec = MediaCodec.createEncoderByType(type = format.getString(MediaFormat.KEY_MIME));
+                log("createEncoder  type:" + type);
+            } else {
+                mediaCodec = MediaCodec.createDecoderByType(type = format.getString(MediaFormat.KEY_MIME));
+                log("createDecoder  type:" + type);
+            }
         }
         //定义这个实例的格式，也就是上面我们定义的format，其他参数不用过于关注
         //第一个参数将我们上面设置的format传进去
@@ -113,9 +171,10 @@ public class MediaCodecHelper {
         log("start");
 
         if (callback != null) {
-            if (intputSurface == null)
+            if (intputSurface == null && openInputCallback)
                 ExecutorUtils.execute(inputRunable);
-            ExecutorUtils.execute(outputRunalbe);
+            if (openOutputCallback)
+                ExecutorUtils.execute(outputRunalbe);
         }
 
         return this;
@@ -136,18 +195,12 @@ public class MediaCodecHelper {
                 logInput("dequeueInputBuffer before:");
                 int inputBufferIndex = mediaCodec.dequeueInputBuffer(-1);
                 logInput("inputBufferIndex:" + inputBufferIndex);
-                //  == MediaCodec.INFO_TRY_AGAIN_LATER：  请求超时  dequeueOutputBuffer 有超时时间的算
-                if (inputBufferIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
-                    MediaFormat newFormat = mediaCodec.getOutputFormat();
-                    logInput("encoder input format changed: " + newFormat);
-                    callback.onOutputFormatChanged(mediaCodec, newFormat);
-                } else if (inputBufferIndex >= 0) {
+                if (inputBufferIndex >= 0) {
                     logInput("available inputBufferIndex: " + inputBufferIndex);
                     callback.onInputBufferAvailable(mediaCodec, inputBufferIndex);
                 } else {
                     logInput("other.... ");
                 }
-
             }
         }
     };
@@ -157,30 +210,33 @@ public class MediaCodecHelper {
             MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
             while (true) {
                 int outputBufIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, -1);
-//                int outputBufIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, 12000);
                 logIOutput("outputBufIndex:" + outputBufIndex);
-
 //              outputBufIndex == MediaCodec.INFO_TRY_AGAIN_LATER：  请求超时  dequeueOutputBuffer 有超时时间的算
-
                 if (outputBufIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
                     MediaFormat newFormat = mediaCodec.getOutputFormat();
                     logIOutput("encoder output format changed: " + newFormat);
                     callback.onOutputFormatChanged(mediaCodec, newFormat);
                 } else if (outputBufIndex >= 0) {
+
                     logIOutput("available   outputBufIndex: " + outputBufIndex);
+                    //逻辑不懂的话  看MediaCodec.BUFFER_FLAG_CODEC_CONFIG注释
                     if ((bufferInfo.flags & MediaCodec.BUFFER_FLAG_CODEC_CONFIG) != 0) {
                         bufferInfo.size = 0;
-                        //逻辑不懂的话  看MediaCodec.BUFFER_FLAG_CODEC_CONFIG注释
                         logIOutput("Tip:initialization / codec specific data instead of media data！");
                     }
+
                     boolean isEndOfStream = (bufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0;
-                    callback.onOutputBufferAvailable(mediaCodec, outputBufIndex, bufferInfo, isEndOfStream);
-                    //有点数据 但是有一半
                     if (isEndOfStream) {
                         logIOutput("Tip:BUFFER_FLAG_END_OF_STREAM！");
+                    }
+                    callback.onOutputBufferAvailable(mediaCodec, outputBufIndex, bufferInfo, isEndOfStream);
+                    //有点数据 但是有一半
+
+                    if (isEndOfStream) {
                         checkEndSign();
                         break;
                     }
+
                 } else {
                     logIOutput("other.... ");
                 }
@@ -212,7 +268,7 @@ public class MediaCodecHelper {
      * 调用的时机,就是输出流遇到 isEndOfStream 。此标示,标示这个流已经是结尾了
      */
     public void release() {
-        if(intputSurface==null)
+        if (intputSurface == null)
             checkEndSign();
         if (mediaCodec != null) {
             mediaCodec.stop();
@@ -231,6 +287,15 @@ public class MediaCodecHelper {
         return this;
     }
 
+    boolean openInputCallback = true, openOutputCallback = true;
+
+    public MediaCodecHelper callback(boolean openInputCallback, boolean openOutputCallback, Callback callback) {
+        this.callback = callback;
+        this.openInputCallback = openInputCallback;
+        this.openOutputCallback = openOutputCallback;
+        return this;
+    }
+
     public MediaCodecHelper signalEndOfInputStream() {
         if (intputSurface != null)
             mediaCodec.signalEndOfInputStream();
@@ -242,6 +307,7 @@ public class MediaCodecHelper {
 
     private void signalEnd() {
         isEndOf.set(true);
+        log("写入结束标示");
     }
 
     public MediaCodecHelper signalEndOfQueueInputBuffer(int inputBufferIndex) {
@@ -254,5 +320,9 @@ public class MediaCodecHelper {
         return this;
     }
 
+    public MediaCodecHelper tag(String tag) {
+        this.TAG = tag;
+        return this;
+    }
 
 }

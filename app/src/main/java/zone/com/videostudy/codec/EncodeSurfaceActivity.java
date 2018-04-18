@@ -36,7 +36,7 @@ import zone.com.videostudy.codec.utils.MediaCodecHelper;
  * MIT License
  * Copyright (c) [2018] [Zone]
  */
-public class EncodeSurfaceAsyc_SelfActivity extends Activity {
+public class EncodeSurfaceActivity extends Activity {
 
 
     @Bind(R.id.video)
@@ -186,6 +186,7 @@ public class EncodeSurfaceAsyc_SelfActivity extends Activity {
 
 
             helper= MediaCodecHelper.encode(mediaFormat)
+                    .createByCodecName()
                     .intputSurface(new MediaCodecHelper.IntputSurface() {
                         @Override
                         public void onCreate(Surface surface2) {
