@@ -15,7 +15,6 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.MediaController;
 import android.widget.VideoView;
-
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
@@ -37,11 +36,10 @@ import zone.com.videostudy.codec.utils.MediaCodecHelper;
 
 /**
  * MIT License
- *
- * mp3 wav 都可以格式 解码后编码成
- * 在编码AAC那种 然后添加ACT头部；
- * 文件写入
- *
+ * <p>
+ *  ﻿合成mp4( MP3,wav支持)：解码+编码器（AAC）。在编码AAC的输出端 + feed给Muxer
+ *  参考：https://blog.csdn.net/TinsanMr/article/details/51049179
+ * <p>
  * Copyright (c) [2018] [Zone]
  */
 public class MP3toMP4_MuxerAcitivty extends Activity {
@@ -246,7 +244,7 @@ public class MP3toMP4_MuxerAcitivty extends Activity {
             byteBuffer.position(info.offset);
             byteBuffer.limit(info.offset + info.size);
 
-            mMediaMuxer.writeSampleData(audioTrackIdx,byteBuffer,info);
+            mMediaMuxer.writeSampleData(audioTrackIdx, byteBuffer, info);
         }
         codec.releaseOutputBuffer(index, false);
         if (isEndOfStream) {
@@ -262,27 +260,6 @@ public class MP3toMP4_MuxerAcitivty extends Activity {
         }
     }
 
-    /**
-     * Add ADTS header at the beginning of each and every AAC packet.
-     * This is needed as MediaCodec encoder generates a packet of raw
-     * AAC data.
-     * <p>
-     * Note the packetLen must count in the ADTS header itself.
-     **/
-    private void addADTStoPacket(byte[] packet, int packetLen) {
-        int profile = 2;  //AAC LC
-        //39=MediaCodecInfo.CodecProfileLevel.AACObjectELD;
-        int freqIdx = 4;  //44.1KHz
-        int chanCfg = 2;  //CPE
-        // fill in ADTS data
-        packet[0] = (byte) 0xFF;
-        packet[1] = (byte) 0xF9;
-        packet[2] = (byte) (((profile - 1) << 6) + (freqIdx << 2) + (chanCfg >> 2));
-        packet[3] = (byte) (((chanCfg & 3) << 6) + (packetLen >> 11));
-        packet[4] = (byte) ((packetLen & 0x7FF) >> 3);
-        packet[5] = (byte) (((packetLen & 7) << 5) + 0x1F);
-        packet[6] = (byte) 0xFC;
-    }
 
 
     private void playMp4() {

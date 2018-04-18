@@ -11,7 +11,7 @@ import and.Configuration;
 import zone.com.videostudy.audiomedia.RecordingActivity;
 import zone.com.videostudy.audiomedia.RecordingAudioActivity;
 import zone.com.videostudy.codec.DecodeMP4Activity;
-import zone.com.videostudy.codec.MP3toAACAcitivty;
+import zone.com.videostudy.codec.MP3toAAC_FileAcitivty;
 import zone.com.videostudy.codec.WAVtoMp4Activity;
 import zone.com.videostudy.codec.EncodeSurfaceActivity;
 import zone.com.videostudy.codec.Extract2MuxerActivity;
@@ -80,7 +80,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, MP3toMP4_MuxerAcitivty.class));
                 break;
             case R.id.bt_mp3_to_mp4:
-                startActivity(new Intent(this, MP3toAACAcitivty.class));
+                startActivity(new Intent(this, MP3toAAC_FileAcitivty.class));
                 break;
             case R.id.bt_pcmtoMp4:
                 startActivity(new Intent(this, RecordAudioToAAcActivity.class));

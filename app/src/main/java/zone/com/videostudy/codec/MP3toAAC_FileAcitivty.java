@@ -35,16 +35,13 @@ import zone.com.videostudy.codec.utils.MediaCodecHelper;
 
 /**
  * MIT License
- *
- * mp3 wav 都可以格式 解码后编码成
- * 在编码AAC那种 然后添加ACT头部；
- * 文件写入
- *
+ * <p>
+ * AAC文件写入( MP3,wav支持)：解码+编码器（AAC）。在编码AAC的输出端 添加ACT头部 后  文件流的方式写入
  * Copyright (c) [2018] [Zone]
- *
- *  参考：https://blog.csdn.net/TinsanMr/article/details/51049179
+ * <p>
+ * 参考：https://blog.csdn.net/TinsanMr/article/details/51049179
  */
-public class MP3toAACAcitivty extends Activity {
+public class MP3toAAC_FileAcitivty extends Activity {
     final String MP3NAMe = "record.wav";
     File mp3 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", MP3NAMe);
 

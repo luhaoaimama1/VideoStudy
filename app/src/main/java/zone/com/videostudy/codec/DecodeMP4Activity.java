@@ -36,7 +36,6 @@ import zone.com.videostudy.utils.RawUtils;
  */
 
 public class DecodeMP4Activity extends Activity {
-
     //    final String MP4NAME = "record_raw.mp4";
     final String MP4NAME = "record.wav";
     File mp4 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", MP4NAME);

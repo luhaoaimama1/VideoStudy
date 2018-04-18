@@ -115,14 +115,6 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="#D7F679"
-            android:gravity="center"
-            android:padding="10dp"
-            android:text="问题：Muxer合成wav格式,通过wav解码PCM 然后编码AAC 不知道为啥就是不行。但是编码阶段写入文件就是AAC" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
             android:background="#D74679"
             android:gravity="center"
             android:padding="10dp"
