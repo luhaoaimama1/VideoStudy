@@ -3,12 +3,11 @@ package zone.com.videostudy.audiomedia.utilsnow.audio.play.audiotrack;
 import android.media.AudioFormat;
 import android.media.AudioManager;
 import android.media.AudioTrack;
-import android.media.MediaFormat;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import zone.com.videostudy.audiomedia.utilsnow.audio.record.audio.RecordConfig;
+import zone.com.videostudy.audiomedia.utilsnow.audio.record.audio.AudioRecordConfig;
 
 /**
  * MIT License
@@ -16,19 +15,19 @@ import zone.com.videostudy.audiomedia.utilsnow.audio.record.audio.RecordConfig;
  */
 
 public class AudioTrackHelper {
-    private RecordConfig recordConfig;
+    private AudioRecordConfig audioRecordConfig;
     AudioTrack audioTrack;
     int playBufSize, frequency, channel, audioEncoding;
     private int recBufSize;
 
 
-    public AudioTrackHelper(RecordConfig recordConfig) {
-        this.recordConfig = recordConfig;
-        frequency = recordConfig.getSampleRate();
+    public AudioTrackHelper(AudioRecordConfig audioRecordConfig) {
+        this.audioRecordConfig = audioRecordConfig;
+        frequency = audioRecordConfig.getSampleRate();
         channel = AudioFormat.CHANNEL_CONFIGURATION_MONO;
-        audioEncoding = recordConfig.getAudioFormat();
+        audioEncoding = audioRecordConfig.getAudioFormat();
         playBufSize = AudioTrack.getMinBufferSize(frequency, channel, audioEncoding);
-        recBufSize = recordConfig.getBufferSizeInBytes();
+        recBufSize = audioRecordConfig.getMinBufferSizeAR();
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, frequency,
                 channel, audioEncoding,
                 playBufSize, AudioTrack.MODE_STREAM);

@@ -21,13 +21,11 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import zone.com.videostudy.ImageActivity;
-import zone.com.videostudy.MainActivity;
 import zone.com.videostudy.R;
 import zone.com.videostudy.record.uitlssss.MediaProjectionHelper;
 import zone.com.videostudy.record.uitlssss.ResultOK;
 import zone.com.videostudy.record.uitlssss.VirtualDisplayParams;
 import zone.com.videostudy.record.utils.ImageReaderUtils;
-import zone.com.videostudy.record.utils.AMediaProjection;
 
 /**
  * Created by fuzhipeng on 16/7/25.

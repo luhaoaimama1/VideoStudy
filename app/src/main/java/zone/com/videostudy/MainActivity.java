@@ -18,7 +18,6 @@ import zone.com.videostudy.codec.Extract2MuxerActivity;
 import zone.com.videostudy.codec.MP3toMP4_MuxerAcitivty;
 import zone.com.videostudy.codec.RecordAudioToAAcActivity;
 import zone.com.videostudy.record.CaptureActivity;
-import zone.com.videostudy.record.RecorderMp4Activity;
 import zone.com.videostudy.record.LopRecordActivity;
 import zone.com.videostudy.video.VideoActivity;
 import zone.com.videostudy.video.VideoRecordActivity;
@@ -55,16 +54,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, VideoRecordActivity.class));
                 break;
             case R.id.screenRecord:
-//                startActivity(new Intent(this,RecordActivity.class));
-//                startActivity(new Intent(this,LopRecordActivity.class));
                 startActivity(new Intent(this, LopRecordActivity.class));
                 break;
             case R.id.screenCapture:
                 startActivity(new Intent(this, CaptureActivity.class));
-//                startActivity(new Intent(this,CaptureActivity2.class));
-                break;
-            case R.id.screenRecordToMp4:
-                startActivity(new Intent(this, RecorderMp4Activity.class));
                 break;
 
             case R.id.audio:
@@ -77,10 +70,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 startActivity(new Intent(this, Extract2MuxerActivity.class));
                 break;
             case R.id.bt_wav_to_aac:
-                startActivity(new Intent(this, MP3toMP4_MuxerAcitivty.class));
+                startActivity(new Intent(this, MP3toAAC_FileAcitivty.class));
                 break;
             case R.id.bt_mp3_to_mp4:
-                startActivity(new Intent(this, MP3toAAC_FileAcitivty.class));
+                startActivity(new Intent(this, MP3toMP4_MuxerAcitivty.class));
                 break;
             case R.id.bt_pcmtoMp4:
                 startActivity(new Intent(this, RecordAudioToAAcActivity.class));

@@ -36,10 +36,10 @@ import zone.com.videostudy.utils.RawUtils;
  */
 
 public class DecodeMP4Activity extends Activity {
-    //    final String MP4NAME = "record_raw.mp4";
-    final String MP4NAME = "record.wav";
+    final String MP4NAME = "record_asset.wav";
     File mp4 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", MP4NAME);
-    File mp5 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "record_lopip.mp4");
+    final String MP5NAME = "record_asset.mp4";
+    File mp5 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", MP5NAME);
     @Bind(R.id.surface)
     SurfaceView surface;
     private ExtractorWrapper videoWrapper, audioWrapper;
@@ -52,20 +52,25 @@ public class DecodeMP4Activity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_decode_mp4);
         ButterKnife.bind(this);
-//        if (!SharedUtils.get("exist", false))
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    RawUtils.copyFilesFromAssset(DecodeMP4Activity.this, MP4NAME, mp4.getAbsolutePath());
-//                    SharedUtils.put("exist", true);
-//                }
-//            }).start();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                RawUtils.copyFilesFromAssset(DecodeMP4Activity.this,
+                        MP4NAME, mp4.getAbsolutePath());
+                RawUtils.copyFilesFromAssset(DecodeMP4Activity.this,
+                        MP5NAME, mp5.getAbsolutePath());
+            }
+        }).start();
     }
 
     @OnClick(R.id.bt_decode)
     public void onViewClicked() {
         initMediaCodec();
         initMediaCodecAudio();
+    }
+    @OnClick(R.id.bt_decode_quit)
+    public void onViewClicked2() {
+        videoHelper.forcedQuit();
     }
 
     public AudioTrack getAudioTrackByFormat(MediaFormat mediaFormat) {
@@ -172,6 +177,7 @@ public class DecodeMP4Activity extends Activity {
             startMs = System.currentTimeMillis();
             videoHelper = MediaCodecHelper.decode(videoWrapper.format)
                     .createByCodecName()
+                    .timeoutUs(12000)
                     .outputSurface(surface.getHolder().getSurface())
                     .callback(new Callback() {
 
@@ -216,6 +222,7 @@ public class DecodeMP4Activity extends Activity {
         }
     }
 
+
     //延迟渲染
     private void sleepRender(MediaCodec.BufferInfo audioBufferInfo, long startMs) {
         while (audioBufferInfo.presentationTimeUs / 1000 > System.currentTimeMillis() - startMs) {
@@ -226,5 +233,11 @@ public class DecodeMP4Activity extends Activity {
                 break;
             }
         }
+    }
+
+    @Override
+    protected void onDestroy() {
+        videoHelper.forcedQuit();
+        super.onDestroy();
     }
 }

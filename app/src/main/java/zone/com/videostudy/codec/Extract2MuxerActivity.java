@@ -41,11 +41,12 @@ import zone.com.videostudy.utils.RawUtils;
 
 public class Extract2MuxerActivity extends Activity {
     private static final String TAG = "Extract2MuxerActivity";
-    final String MP4NAME = "record_raw.mp4";
+    final String MP4NAME = "record_asset.mp4";
     File mp4 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", MP4NAME);
-    final String MP42_NAMe = "audio.mp4";
+
+    final String MP42_NAMe = "audio_asset.mp4";
     File mp4_2 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", MP42_NAMe);
-    File muxer = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "muxerFile.mp4");
+    File muxer = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "muxer_Extract2Muxer.mp4");
 
     @Bind(R.id.video)
     VideoView videoView;
@@ -57,16 +58,16 @@ public class Extract2MuxerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_muxer);
         ButterKnife.bind(this);
-        SharedUtils.put("exist", false);
-        if (!SharedUtils.get("exist", false))
-            new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    RawUtils.copyFilesFromAssset(Extract2MuxerActivity.this, MP4NAME, mp4.getAbsolutePath());
-                    RawUtils.copyFilesFromAssset(Extract2MuxerActivity.this, MP42_NAMe, mp4_2.getAbsolutePath());
-                    SharedUtils.put("exist", true);
-                }
-            }).start();
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                RawUtils.copyFilesFromAssset(Extract2MuxerActivity.this,
+                        MP4NAME, mp4.getAbsolutePath());
+                RawUtils.copyFilesFromAssset(Extract2MuxerActivity.this,
+                        MP42_NAMe, mp4_2.getAbsolutePath());
+            }
+        }).start();
     }
 
     @OnClick(R.id.bt_muxer)

@@ -10,7 +10,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import zone.com.videostudy.audiomedia.utilsnow.audio.record.audio.RecordConfig;
+import zone.com.videostudy.audiomedia.utilsnow.audio.record.audio.AudioRecordConfig;
 
 /**
  * 原理 ：PCMtoWavUtils
@@ -26,11 +26,11 @@ public class PCMtoWav {
     private int channels = 1;
 
 
-    public void pcm2wav(RecordConfig recordConfig, String outPath) {
+    public void pcm2wav(AudioRecordConfig audioRecordConfig, String outPath) {
 //        int sampleRateInHz, int bitsPerSample, int channels
         this.outPath = outPath;
-        sampleRateInHz = recordConfig.getSampleRate();
-        switch (recordConfig.getAudioFormat()) {
+        sampleRateInHz = audioRecordConfig.getSampleRate();
+        switch (audioRecordConfig.getAudioFormat()) {
             case AudioFormat.ENCODING_PCM_16BIT:
                 bitsPerSample = 16;
                 break;
@@ -41,7 +41,7 @@ public class PCMtoWav {
                 throw new IllegalStateException("内置无法处理此格式");
         }
 
-        switch (recordConfig.getChannelConfig()) {
+        switch (audioRecordConfig.getChannelConfig()) {
             case AudioFormat.CHANNEL_IN_MONO:
                 channels = 1;
                 break;

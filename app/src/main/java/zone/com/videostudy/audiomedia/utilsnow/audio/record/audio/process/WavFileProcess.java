@@ -23,7 +23,7 @@ public class WavFileProcess implements Process {
 
     @Override
     public void init(AudioRecorder audioRecord) throws Exception {
-        mPCMtoWav.pcm2wav(audioRecord.getRecordConfig(),filePath);
+        mPCMtoWav.pcm2wav(audioRecord.getAudioRecordConfig(),filePath);
         mPCMtoWav.initFile();
     }
 

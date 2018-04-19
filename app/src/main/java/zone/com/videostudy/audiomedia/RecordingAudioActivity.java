@@ -119,7 +119,7 @@ public class RecordingAudioActivity extends Activity {
     File wav2 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "record.wav");
 
     private void audioTrack() throws Exception {
-        new AudioTrackHelper(mAudioRecorder.getRecordConfig())
+        new AudioTrackHelper(mAudioRecorder.getAudioRecordConfig())
                 .playPCM(file.getAbsolutePath())
                 .release();
     }

@@ -2,8 +2,6 @@ package zone.com.videostudy.codec;
 
 import android.annotation.TargetApi;
 import android.app.Activity;
-import android.media.AudioFormat;
-import android.media.AudioTrack;
 import android.media.MediaCodec;
 import android.media.MediaCodecInfo;
 import android.media.MediaFormat;
@@ -32,7 +30,7 @@ import zone.com.videostudy.R;
 import zone.com.videostudy.audiomedia.utilsnow.audio.play.audiotrack.AudioTrackHelper;
 import zone.com.videostudy.audiomedia.utilsnow.audio.record.audio.AudioRecorder;
 import zone.com.videostudy.audiomedia.utilsnow.audio.record.audio.Process;
-import zone.com.videostudy.audiomedia.utilsnow.audio.record.audio.RecordConfig;
+import zone.com.videostudy.audiomedia.utilsnow.audio.record.audio.AudioRecordConfig;
 import zone.com.videostudy.audiomedia.utilsnow.audio.record.audio.process.FileProcess;
 import zone.com.videostudy.audiomedia.utilsnow.audio.record.audio.process.VolumeProcess;
 import zone.com.videostudy.audiomedia.utilsnow.audio.record.audio.process.WavFileProcess;
@@ -47,11 +45,14 @@ public class RecordAudioToAAcActivity extends Activity {
     private AudioRecorder mAudioRecorder = new AudioRecorder();
     private MediaPlayer mediaPlayer = new MediaPlayer();
     private MediaMuxer mMediaMuxer;
-    File muxer = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "muxerFileNOW.mp4");
     private MediaCodecHelper helper;
     private int muxIndex;
     @Bind(R.id.video)
     VideoView videoView;
+
+    File muxer = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "muxer_RecordAudioToAAc.mp4");
+    File file = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "record.pcm_");
+    File wav = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "record.wav");
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -71,7 +72,7 @@ public class RecordAudioToAAcActivity extends Activity {
                 initMediaCode();
                 mAudioRecorder
                         .process(
-                                new WavFileProcess(wav2.getAbsolutePath()),
+                                new WavFileProcess(wav.getAbsolutePath()),
 //                                new AudioTrackProcess(),
                                 new FileProcess(file.getAbsolutePath()),
                                 new Process() {
@@ -163,12 +164,12 @@ public class RecordAudioToAAcActivity extends Activity {
                             if (isEndOfStream) {
                                 mMediaMuxer.stop();
                                 mMediaMuxer.release();
-                               runOnUiThread(new Runnable() {
-                                   @Override
-                                   public void run() {
-                                       playMp4();
-                                   }
-                               });
+                                runOnUiThread(new Runnable() {
+                                    @Override
+                                    public void run() {
+                                        playMp4();
+                                    }
+                                });
 
                             } else {
                                 ByteBuffer outputBuffer = codec.getOutputBuffer(index);
@@ -222,20 +223,21 @@ public class RecordAudioToAAcActivity extends Activity {
         if (result < prevPresentationTimes) {
             result = (prevPresentationTimes - result) + result;
         }
+        Log.d("helper___3333", " getPTSUs :" + result);
         return result;
     }
 
     private MediaFormat getFormat() {
-        RecordConfig config = mAudioRecorder.getRecordConfig();
+        AudioRecordConfig config = mAudioRecorder.getAudioRecordConfig();
         MediaFormat mediaFormat = new MediaFormat();
         mediaFormat.setString(MediaFormat.KEY_MIME, "audio/mp4a-latm");
 //        mediaFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, config.getChannelConfig());
-        mediaFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT,1);
+        mediaFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1);
         mediaFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, config.getSampleRate());
         mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, 64000);// AAC-HE // 64kbps
 //        mediaFormat.setInteger(MediaFormat.KEY_BIT_RATE, 16000);// AAC-HE // 64kbps
         mediaFormat.setInteger(MediaFormat.KEY_AAC_PROFILE, MediaCodecInfo.CodecProfileLevel.AACObjectLC);
-        mediaFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, config.getBufferSizeInBytes() * 5);
+        mediaFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, config.getMinBufferSizeAR() * 5);
         return mediaFormat;
     }
 
@@ -266,12 +268,10 @@ public class RecordAudioToAAcActivity extends Activity {
         }
     }
 
-    File file = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "record.pcm_");
-    File wav = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "record.wav");
-    File wav2 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "record.wav");
+
 
     private void audioTrack() throws Exception {
-        new AudioTrackHelper(mAudioRecorder.getRecordConfig())
+        new AudioTrackHelper(mAudioRecorder.getAudioRecordConfig())
                 .playPCM(file.getAbsolutePath())
                 .release();
     }

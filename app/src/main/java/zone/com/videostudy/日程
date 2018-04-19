@@ -1,3 +1,9 @@
+AudioRecord
+命名：
+utils:AudioRecordUs
+helper:AudioRecordEs
+
+
 音频：
 AudioRecord(pcm wav 音量),AudioTrack(pcm播放)
 
@@ -31,17 +37,21 @@ demo2: MediaCodec (音频编码 视频编码 各对应一个)
 
 学习项目： MediaPlaySimpleDemo(小型的播放器，MediaExtractor提起声音 画面 解析)
 
-todo  支持 编码工具类 输入输出 在一个线程中串联
+录屏 MediaProjection , MediaCodec和MediaMuxer
+
+
+todo  支持 编码工具类 输入输出 在一个线程中串联，   默认支持 查， 增加skip那种 常使用的创建方式。
+ 增加format检查  一般 通道这里错的多  16是1~
+todo 狮吼 高清参数 ， 弄成枚举
 todo  封装 一些功能： Audiotrack工具类（用来检查）、formate相关 、与我的config 并支持快速生成那种方式  等等！
 todo  MediaPlaySimpleDemo 等待计算时间不错 、计算1帧之间的算法
 todo  VideoClip 有用到 Combine 的功能也不错哦！
+todo activity 与service 生命周期 的 录屏封装
 
 todo 这方面封装完毕 的话请整理此相关的使用类
 
-todo 录屏 MediaProjection , MediaCodec和MediaMuxer
 
-todo  RecordActivity:录屏1操作 RecorderMp4Activity：录屏2操作，舍弃 然后对比下 那个使用起来更好。在优化下
-
+ ========================近期目标 ==========================
 todo 录制gif(
 B站逻辑
 恩下,进度条走时间，
@@ -49,14 +59,20 @@ B站逻辑
 大于某个时间 松手 生成gif
 到头 生成gif）
 
-todo  surfaceView  等相关的类
-todo AndroidLiveRecord  openGLEncode openGLEncode
-
-todo activity 与service 生命周期 的 录屏封装
+todo  MediaPlayer VideoView  B站，编译文件
 
 todo  金山云直播 sdk接入尝试；
 
-todo  MediaPlayer VideoView  B站，编译文件
+todo 需要的话就学 surfaceView  等相关的类
+ ========================近期目标 ==========================
+
+
+
+
+todo AndroidLiveRecord  openGLEncode openGLEncode
+
 
 todo  文件操作 假如写入的MP4 文件，未完成的时候结尾用temp,完结回归改成.mp4
 这样我检查的时候 看看.mp4是否纯在就可以判断操作是否完成了
+
+todo 动画库 与别人的接口相同， 如何支持别人的？ 适配器吗？ 最好的办法 就是导入他的库 实际使用一次！

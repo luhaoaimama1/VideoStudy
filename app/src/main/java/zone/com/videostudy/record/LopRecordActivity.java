@@ -1,9 +1,11 @@
 package zone.com.videostudy.record;
 
 import android.app.Activity;
+import android.app.Service;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.IdRes;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -35,7 +37,8 @@ public class LopRecordActivity extends Activity {
     /**
      * 是否为标清视频
      */
-    private boolean isVideoSd = true;
+    private boolean isVideoSd = false;
+    private boolean openIsMediaRecord = true;
     /**
      * 是否开启音频录制
      */
@@ -93,6 +96,23 @@ public class LopRecordActivity extends Activity {
                 }
             }
         });
+        RadioGroup radioGroup2 = (RadioGroup) findViewById(R.id.radio_group2);
+        radioGroup2.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, @IdRes int checkedId) {
+                switch (checkedId) {
+                    case R.id.rb_open_codec:
+                        openIsMediaRecord = false;
+                        break;
+                    case R.id.rb_open_mediaRecord:
+                        openIsMediaRecord = true;
+                        break;
+
+                    default:
+                        break;
+                }
+            }
+        });
 
         CheckBox audioBox = (CheckBox) findViewById(R.id.audio_check_box);
         audioBox.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -135,7 +155,8 @@ public class LopRecordActivity extends Activity {
 
             @Override
             public void onResultOK(VirtualDisplayParams params) {
-                Intent service = new Intent(LopRecordActivity.this, ScreenRecordService.class);
+                Intent service = new Intent(LopRecordActivity.this,
+                        getOpenServiceCls());
                 params.writeExtra(service);
                 startService(service);
                 // 已经开始屏幕录制，修改UI状态
@@ -151,13 +172,23 @@ public class LopRecordActivity extends Activity {
         });
     }
 
+    @NonNull
+    private Class<? extends Service> getOpenServiceCls() {
+        return openIsMediaRecord ? ScreenRecordService.class : ScreenRecordMuxerService.class;
+    }
+
     /**
      * 关闭屏幕录制，即停止录制Service
      */
     private void stopScreenRecording() {
-        Intent service = new Intent(this, ScreenRecordService.class);
-        stopService(service);
-        isStarted = !isStarted;
+        Intent service = new Intent(this, getOpenServiceCls());
+        if (openIsMediaRecord)
+            stopService(service);
+        else{
+            service.putExtra("stop",true);
+            startService(service);
+        }
+            isStarted = !isStarted;
     }
 
     /**

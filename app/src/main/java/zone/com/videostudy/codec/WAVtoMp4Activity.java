@@ -24,6 +24,7 @@ import java.nio.ByteBuffer;
 import and.utils.activity_fragment_ui.ToastUtils;
 import and.utils.data.file2io2data.FileUtils;
 import and.utils.data.file2io2data.SDCardUtils;
+import and.utils.data.file2io2data.SharedUtils;
 import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
@@ -31,6 +32,7 @@ import zone.com.videostudy.R;
 import zone.com.videostudy.codec.utils.Callback;
 import zone.com.videostudy.codec.utils.ExtractorWrapper;
 import zone.com.videostudy.codec.utils.MediaCodecHelper;
+import zone.com.videostudy.utils.RawUtils;
 
 /**
  * MIT License
@@ -54,9 +56,11 @@ public class WAVtoMp4Activity extends Activity {
     Button btMuxer;
     private int channelCount = 1;
 
-    File mp3 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "record.wav");
+
+    final String MP3NAMe = "record_asset.wav";
+    File mp3 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", MP3NAMe);
     //    File mp3 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "test_raw.mp3");
-    File muxer = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "muxerFile_Japan.mp4");
+    File muxer = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "muxer_WAVtoMp4.mp4");
     private MediaMuxer mMediaMuxer;
     private int audioTrackIdx;
     private ExtractorWrapper audioWarper;
@@ -67,6 +71,13 @@ public class WAVtoMp4Activity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_muxer);
         ButterKnife.bind(this);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                RawUtils.copyFilesFromAssset(WAVtoMp4Activity.this,
+                        MP3NAMe, mp3.getAbsolutePath());
+            }
+        }).start();
     }
 
     @NonNull

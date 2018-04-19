@@ -52,10 +52,9 @@
         <activity android:name=".record.LopRecordActivity"></activity>
 
         <service android:name=".record.ScreenRecordService"></service>
+        <service android:name=".record.ScreenRecordMuxerService"></service>
 
-        <activity android:name=".record.RecordActivity"></activity>
         <activity android:name=".record.CaptureActivity"></activity>
-        <activity android:name=".record.RecorderMp4Activity"></activity>
     </application>
 
 </manifest>

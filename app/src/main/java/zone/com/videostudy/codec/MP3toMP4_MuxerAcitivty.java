@@ -15,9 +15,8 @@ import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.MediaController;
 import android.widget.VideoView;
-import java.io.BufferedOutputStream;
+
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
@@ -29,26 +28,27 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import zone.com.videostudy.R;
-import zone.com.videostudy.audiomedia.utilsnow.audio.play.audiotrack.AudioTrackUtils;
 import zone.com.videostudy.codec.utils.Callback;
 import zone.com.videostudy.codec.utils.ExtractorWrapper;
 import zone.com.videostudy.codec.utils.MediaCodecHelper;
+import zone.com.videostudy.utils.RawUtils;
 
 /**
  * MIT License
  * <p>
- *  ﻿合成mp4( MP3,wav支持)：解码+编码器（AAC）。在编码AAC的输出端 + feed给Muxer
- *  参考：https://blog.csdn.net/TinsanMr/article/details/51049179
+ * ﻿合成mp4( MP3,wav支持)：解码+编码器（AAC）。在编码AAC的输出端 + feed给Muxer
+ * 参考：https://blog.csdn.net/TinsanMr/article/details/51049179
  * <p>
  * Copyright (c) [2018] [Zone]
  */
 public class MP3toMP4_MuxerAcitivty extends Activity {
     private static final String LOGTAG = "MP3toAACAcitivty";
-    final String MP3NAMe = "record.wav";
+
+
+    final String MP3NAMe = "record_asset.wav";
     File mp3 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", MP3NAMe);
 
-
-    final String MP4NAME = "test_raw.mp3";
+    final String MP4NAME = "test_asset.mp3";
     File mp4 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", MP4NAME);
 
     @Bind(R.id.video)
@@ -66,6 +66,16 @@ public class MP3toMP4_MuxerAcitivty extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_muxer);
         ButterKnife.bind(this);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                RawUtils.copyFilesFromAssset(MP3toMP4_MuxerAcitivty.this,
+                        MP3NAMe, mp3.getAbsolutePath());
+                RawUtils.copyFilesFromAssset(MP3toMP4_MuxerAcitivty.this,
+                        MP4NAME, mp4.getAbsolutePath());
+            }
+        }).start();
     }
 
     @OnClick(R.id.bt_muxer)
@@ -259,7 +269,6 @@ public class MP3toMP4_MuxerAcitivty extends Activity {
             });
         }
     }
-
 
 
     private void playMp4() {

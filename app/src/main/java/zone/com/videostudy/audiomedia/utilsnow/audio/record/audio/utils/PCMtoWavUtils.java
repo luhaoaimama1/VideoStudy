@@ -11,7 +11,7 @@ import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 
-import zone.com.videostudy.audiomedia.utilsnow.audio.record.audio.RecordConfig;
+import zone.com.videostudy.audiomedia.utilsnow.audio.record.audio.AudioRecordConfig;
 
 /**
  * https://github.com/lixiaoshaxing/MultiMediaLearn/blob/master/app/src/main/java/com/lx/multimedialearn/utils/MediaUtils.java
@@ -23,11 +23,11 @@ import zone.com.videostudy.audiomedia.utilsnow.audio.record.audio.RecordConfig;
  */
 public class PCMtoWavUtils {
 
-    public static void pcm2wav(RecordConfig recordConfig, String inputPath, String outPath) {
+    public static void pcm2wav(AudioRecordConfig audioRecordConfig, String inputPath, String outPath) {
 //        int sampleRateInHz, int bitsPerSample, int channels
-        int sampleRateInHz = recordConfig.getSampleRate();
+        int sampleRateInHz = audioRecordConfig.getSampleRate();
         int bitsPerSample = 16;
-        switch (recordConfig.getAudioFormat()) {
+        switch (audioRecordConfig.getAudioFormat()) {
             case AudioFormat.ENCODING_PCM_16BIT:
                 bitsPerSample = 16;
                 break;
@@ -38,7 +38,7 @@ public class PCMtoWavUtils {
                 throw new IllegalStateException("内置无法处理此格式");
         }
         int channels = 1;
-        switch (recordConfig.getChannelConfig()) {
+        switch (audioRecordConfig.getChannelConfig()) {
             case AudioFormat.CHANNEL_IN_MONO:
                 channels = 1;
                 break;
@@ -49,7 +49,7 @@ public class PCMtoWavUtils {
                 throw new IllegalStateException("内置无法处理此格式");
         }
 
-        pcm2wav(sampleRateInHz, bitsPerSample, channels, recordConfig.getBufferSizeInBytes(), inputPath, outPath);
+        pcm2wav(sampleRateInHz, bitsPerSample, channels, audioRecordConfig.getMinBufferSizeAR(), inputPath, outPath);
     }
 
     /**

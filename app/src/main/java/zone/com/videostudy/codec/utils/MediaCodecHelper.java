@@ -34,7 +34,13 @@ import and.utils.executor.ExecutorUtils;
  * <p>
  * .release();
  * <p>
- * // FIXME: 2018/4/17  注意：输入的退出标示，一定要用本类中的方法 signalEndOfInputStream， signalEndOfQueueInputBuffer
+ * // FIXME: 2018/4/17  注意：输入的退出标示，一定要用本类中的方法 signalEndOfInputStream，signalEndOfQueueInputBuffer
+ * <p>
+ * todo 注意：对于解码中途退出的解决方案：
+ * <p>
+ * 1：最好使用service那种你可以自己处理完信息在 退出!
+ * 2：使用此类的{@link #forcedQuit()} 记得使用此方法的时候一定要搭配{@link #timeoutUs(long)},他会自己退出
+ *
  */
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class MediaCodecHelper {
@@ -130,6 +136,13 @@ public class MediaCodecHelper {
         return this;
     }
 
+    long timeoutUs = -1;
+
+    public MediaCodecHelper timeoutUs(long timeoutUs) {
+        this.timeoutUs = timeoutUs;
+        return this;
+    }
+
 
     public MediaCodecHelper prepare() throws IOException {
 
@@ -172,44 +185,25 @@ public class MediaCodecHelper {
 
         if (callback != null) {
             if (intputSurface == null && openInputCallback)
-                ExecutorUtils.execute(inputRunable);
+                ExecutorUtils.execute(inputRunable = new InputRunable());
             if (openOutputCallback)
-                ExecutorUtils.execute(outputRunalbe);
+                ExecutorUtils.execute(outputRunalbe = new OutputRunable());
         }
 
         return this;
     }
 
     private volatile AtomicBoolean isEndOf = new AtomicBoolean(false);
+    private volatile AtomicBoolean inputRunOver = new AtomicBoolean(false);
+    private volatile AtomicBoolean outputRunOver = new AtomicBoolean(false);
+    Runnable inputRunable, outputRunalbe;
 
-    Runnable inputRunable = new Runnable() {
-        @Override
-        public void run() {
-
-            while (true) {
-                //todo  什么时候退出呢？
-                if (isEndOf.get()) {
-                    logInput("遇到 退出标示！");
-                    break;
-                }
-                logInput("dequeueInputBuffer before:");
-                int inputBufferIndex = mediaCodec.dequeueInputBuffer(-1);
-                logInput("inputBufferIndex:" + inputBufferIndex);
-                if (inputBufferIndex >= 0) {
-                    logInput("available inputBufferIndex: " + inputBufferIndex);
-                    callback.onInputBufferAvailable(mediaCodec, inputBufferIndex);
-                } else {
-                    logInput("other.... ");
-                }
-            }
-        }
-    };
-    Runnable outputRunalbe = new Runnable() {
+    private class OutputRunable implements Runnable {
         @Override
         public void run() {
             MediaCodec.BufferInfo bufferInfo = new MediaCodec.BufferInfo();
-            while (true) {
-                int outputBufIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, -1);
+            while (true && !isForcedQuit) {
+                int outputBufIndex = mediaCodec.dequeueOutputBuffer(bufferInfo, timeoutUs);
                 logIOutput("outputBufIndex:" + outputBufIndex);
 //              outputBufIndex == MediaCodec.INFO_TRY_AGAIN_LATER：  请求超时  dequeueOutputBuffer 有超时时间的算
                 if (outputBufIndex == MediaCodec.INFO_OUTPUT_FORMAT_CHANGED) {
@@ -226,7 +220,12 @@ public class MediaCodecHelper {
                     }
 
                     boolean isEndOfStream = (bufferInfo.flags & MediaCodec.BUFFER_FLAG_END_OF_STREAM) != 0;
+
                     if (isEndOfStream) {
+                        //这种退出 会自己去释放,所以你恰巧遇到，不打断的话，他处理退出标示 就会释放
+                        //当然也可以在 threadOver中判断 mediaCodec！=null
+                        if (isForcedQuit)
+                            break;
                         logIOutput("Tip:BUFFER_FLAG_END_OF_STREAM！");
                     }
                     callback.onOutputBufferAvailable(mediaCodec, outputBufIndex, bufferInfo, isEndOfStream);
@@ -238,11 +237,74 @@ public class MediaCodecHelper {
                     }
 
                 } else {
-                    logIOutput("other.... ");
+                    logIOutput("other....  outputBufIndex:" + outputBufIndex);
+                }
+            }
+            outputRunOver.set(true);
+            threadOver();
+        }
+    }
+
+    private class InputRunable implements Runnable {
+
+        @Override
+        public void run() {
+            while (true && !isForcedQuit) {
+                //todo  什么时候退出呢？
+                if (isEndOf.get()) {
+                    logInput("遇到 退出标示！");
+                    break;
+                }
+                logInput("dequeueInputBuffer before:");
+                int inputBufferIndex = mediaCodec.dequeueInputBuffer(timeoutUs);
+                logInput("inputBufferIndex:" + inputBufferIndex);
+                if (inputBufferIndex >= 0) {
+                    logInput("available inputBufferIndex: " + inputBufferIndex);
+                    callback.onInputBufferAvailable(mediaCodec, inputBufferIndex);
+                } else {
+                    logInput("other.... inputBufferIndex:" + inputBufferIndex);
+                }
+            }
+            inputRunOver.set(true);
+            threadOver();
+        }
+    }
+
+
+    /**
+     * 对于线程都结束的情况下
+     * todo 非暴力标示 ？自己释放还是别人释放？
+     * <p>
+     * 暴力标示退出 ，自己释放
+     */
+    public synchronized void threadOver() {
+        if (callback != null && isForcedQuit) {
+            boolean inCheck, outCheck;
+            if (inputRunable != null) {
+                inCheck = inputRunOver.get();
+            } else
+                inCheck = true;
+
+            if (outputRunalbe != null)
+                outCheck = outputRunOver.get();
+            else
+                outCheck = true;
+            if (outCheck && inCheck) {
+                log("threadOver 暴力释放！");
+                try {
+                    if (mediaCodec != null) {
+                        mediaCodec.stop();
+                        log("stop");
+                        mediaCodec.release();
+                        log("release");
+                        mediaCodec = null;
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
             }
         }
-    };
+    }
 
     private void checkEndSign() {
         if (!isEndOf.get()) {
@@ -277,6 +339,19 @@ public class MediaCodecHelper {
             log("release");
             mediaCodec = null;
         }
+    }
+
+    boolean isForcedQuit;
+
+    public void forcedQuit() {
+        if (mediaCodec == null)
+            return;
+        isForcedQuit = true;
+        if (timeoutUs <= 0)
+            throw new IllegalStateException("暴力退出这种 必须需要设置延迟时间！");
+        //输入surface不为空，并且没有使用结束标示
+        if (intputSurface != null && !isEndOf.get())
+            signalEndOfInputStream();
     }
 
 

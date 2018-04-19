@@ -37,9 +37,9 @@ public interface Callback {
      * format仅仅是对输出 有关系 输入没有关系！
      *
      * @param codec  The MediaCodec object.
-     * @param format The new output format.
+     * @param newFormat The new output format.
      */
-    void onOutputFormatChanged(@NonNull MediaCodec codec, @NonNull MediaFormat format);
+    void onOutputFormatChanged(@NonNull MediaCodec codec, @NonNull MediaFormat newFormat);
 
 //    void release(@NonNull MediaCodec codec);
 }

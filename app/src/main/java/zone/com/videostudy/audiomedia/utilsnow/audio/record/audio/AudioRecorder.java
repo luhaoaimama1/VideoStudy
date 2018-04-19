@@ -26,20 +26,20 @@ public class AudioRecorder {
     private AtomicBoolean mQuit;
     private boolean isRest = true;
 
-    private RecordConfig recordConfig;
+    private AudioRecordConfig audioRecordConfig;
 
-    public AudioRecorder(RecordConfig recordConfig) {
-        this.recordConfig = recordConfig;
+    public AudioRecorder(AudioRecordConfig audioRecordConfig) {
+        this.audioRecordConfig = audioRecordConfig;
     }
 
     public AudioRecorder() {
-        this(new RecordConfig());
+        this(new AudioRecordConfig());
     }
 
     protected void prepareAudioRecord() {
         // 创建AudioRecord对象
-        audioRecord = new AudioRecord(recordConfig.getAudioSource(), recordConfig.getSampleRate(),
-                recordConfig.getChannelConfig(), recordConfig.getAudioFormat(), recordConfig.getBufferSizeInBytes());
+        audioRecord = new AudioRecord(audioRecordConfig.getAudioSource(), audioRecordConfig.getSampleRate(),
+                audioRecordConfig.getChannelConfig(), audioRecordConfig.getAudioFormat(), audioRecordConfig.getMinBufferSizeAR());
     }
 
     public AudioRecorder start() {
@@ -75,14 +75,14 @@ public class AudioRecorder {
 
     private void writeDateTOFile() throws Exception {
         // new一个byte数组用来存一些字节数据，大小为缓冲区大小
-        byte[] pcmData = new byte[recordConfig.getBufferSizeInBytes()];
+        byte[] pcmData = new byte[audioRecordConfig.getMinBufferSizeAR()];
 
         int readsize = 0;
         for (Process mProces : mProcess)
             mProces.init(AudioRecorder.this);
 
         while (!mQuit.get()) {
-            readsize = audioRecord.read(pcmData, 0, recordConfig.getBufferSizeInBytes());
+            readsize = audioRecord.read(pcmData, 0, audioRecordConfig.getMinBufferSizeAR());
             for (Process mProces : mProcess)
                 readsize = mProces.processData(AudioRecorder.this, pcmData, readsize);
         }
@@ -130,12 +130,12 @@ public class AudioRecorder {
         }
     }
 
-    public RecordConfig getRecordConfig() {
-        return recordConfig;
+    public AudioRecordConfig getAudioRecordConfig() {
+        return audioRecordConfig;
     }
 
-    public void setRecordConfig(RecordConfig recordConfig) {
-        this.recordConfig = recordConfig;
+    public void setAudioRecordConfig(AudioRecordConfig audioRecordConfig) {
+        this.audioRecordConfig = audioRecordConfig;
     }
 
 

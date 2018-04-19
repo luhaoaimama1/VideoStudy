@@ -44,7 +44,7 @@ public class EncodeSurfaceActivity extends Activity {
     @Bind(R.id.bt_muxer)
     Button btMuxer;
     File muxerFile = FileUtils.getFile(SDCardUtils.getSDCardDir(),
-            "VideoStudyHei", "encode_sufacer_mux.mp4");
+            "VideoStudyHei", "mux_EncodeSurface.mp4");
     private Surface surface;
     private MediaCodec mediaCodec;
     private MediaMuxer mMediaMuxer;

@@ -9,6 +9,12 @@
         android:layout_height="0dp"
         android:layout_weight="1"
         android:text="解码！" />
+    <Button
+        android:id="@+id/bt_decode_quit"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:text="强制退出！" />
 
     <SurfaceView
         android:id="@+id/surface"

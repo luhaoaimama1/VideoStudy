@@ -32,6 +32,8 @@ import zone.com.videostudy.R;
 import zone.com.videostudy.codec.utils.Callback;
 import zone.com.videostudy.codec.utils.ExtractorWrapper;
 import zone.com.videostudy.codec.utils.MediaCodecHelper;
+import zone.com.videostudy.codec.utils.MediaFormatEs;
+import zone.com.videostudy.utils.RawUtils;
 
 /**
  * MIT License
@@ -42,17 +44,15 @@ import zone.com.videostudy.codec.utils.MediaCodecHelper;
  * 参考：https://blog.csdn.net/TinsanMr/article/details/51049179
  */
 public class MP3toAAC_FileAcitivty extends Activity {
-    final String MP3NAMe = "record.wav";
+    final String MP3NAMe = "record_asset.wav";
     File mp3 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", MP3NAMe);
 
-
-    final String MP4NAME = "test_raw.mp3";
+    final String MP4NAME = "test_asset.mp3";
     File mp4 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", MP4NAME);
 
     @Bind(R.id.video)
     VideoView videoView;
     private MediaCodecHelper helper, helper2;
-    private AudioTrack audioTrack;
     private byte[] mAudioOutTempBuf;
 
     @Override
@@ -60,15 +60,18 @@ public class MP3toAAC_FileAcitivty extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_muxer);
         ButterKnife.bind(this);
-//        SharedUtils.put("exist", false);
-//        if (!SharedUtils.get("exist", false))
-//            new Thread(new Runnable() {
-//                @Override
-//                public void run() {
-//                    RawUtils.copyFilesFromAssset(WAVtoAACAcitivty.this, MP3NAMe, mp3.getAbsolutePath());
-//                    SharedUtils.put("exist", true);
-//                }
-//            }).start();
+
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                RawUtils.copyFilesFromAssset(MP3toAAC_FileAcitivty.this,
+                        MP3NAMe, mp3.getAbsolutePath());
+                RawUtils.copyFilesFromAssset(MP3toAAC_FileAcitivty.this,
+                        MP4NAME, mp4.getAbsolutePath());
+                SharedUtils.put("exist", true);
+            }
+        }).start();
     }
 
     @OnClick(R.id.bt_muxer)
@@ -106,6 +109,7 @@ public class MP3toAAC_FileAcitivty extends Activity {
         int sampleRate = wrapper.format.getInteger(MediaFormat.KEY_SAMPLE_RATE);
         int channelCount = wrapper.format.getInteger(MediaFormat.KEY_CHANNEL_COUNT);
 
+
         MediaFormat mediaFormat = new MediaFormat();
         mediaFormat.setString("mime", "audio/mp4a-latm");
 //        mediaFormat.setString("mime", MediaFormat.MIMETYPE_AUDIO_MPEG);
@@ -123,7 +127,9 @@ public class MP3toAAC_FileAcitivty extends Activity {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        mediaFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE, maxInputSize == 0 ? minBufferSize * 4 : maxInputSize);
+
+        mediaFormat.setInteger(MediaFormat.KEY_MAX_INPUT_SIZE,
+                maxInputSize == 0 ? minBufferSize * 4 : maxInputSize);
 
         mAudioOutTempBuf = new byte[mediaFormat.getInteger(MediaFormat.KEY_MAX_INPUT_SIZE)];
 

@@ -18,9 +18,9 @@ public class AudioTrackProcess implements Process {
 
     @Override
     public void init(AudioRecorder audioRecorder) throws Exception {
-        frequency = audioRecorder.getRecordConfig().getSampleRate();
+        frequency = audioRecorder.getAudioRecordConfig().getSampleRate();
         channel = AudioFormat.CHANNEL_CONFIGURATION_MONO;
-        audioEncoding = audioRecorder.getRecordConfig().getAudioFormat();
+        audioEncoding = audioRecorder.getAudioRecordConfig().getAudioFormat();
         playBufSize = AudioTrack.getMinBufferSize(frequency, channel, audioEncoding);
         audioTrack = new AudioTrack(AudioManager.STREAM_MUSIC, frequency,
                 channel, audioEncoding,
