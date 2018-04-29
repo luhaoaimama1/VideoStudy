@@ -37,7 +37,7 @@ public class ScreenRecordService extends Service {
 
 
         isVideoSd = intent.getBooleanExtra("quality", true);
-        isAudio = intent.getBooleanExtra("audio", true);
+        isAudio = intent.getBooleanExtra("audio", false);
 
         mediaProjectionHelper.startRecord(this,vdp= VirtualDisplayParams.readExtra(intent), new MediaProjectionHelper.Recorder.RecordNeed() {
             @Override

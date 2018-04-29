@@ -3,7 +3,6 @@ AudioRecord
 utils:AudioRecordUs
 helper:AudioRecordEs
 
-
 音频：
 AudioRecord(pcm wav 音量),AudioTrack(pcm播放)
 
@@ -39,7 +38,6 @@ demo2: MediaCodec (音频编码 视频编码 各对应一个)
 
 录屏 MediaProjection , MediaCodec和MediaMuxer
 
-
 todo  支持 编码工具类 输入输出 在一个线程中串联，   默认支持 查， 增加skip那种 常使用的创建方式。
  增加format检查  一般 通道这里错的多  16是1~
 todo 狮吼 高清参数 ， 弄成枚举
@@ -52,6 +50,10 @@ todo 这方面封装完毕 的话请整理此相关的使用类
 
 
  ========================近期目标 ==========================
+
+
+todo 完整的rtmp推流 https://www.jianshu.com/p/3c479c0f4876?open_source=weibo_search
+
 todo 录制gif(
 B站逻辑
 恩下,进度条走时间，
@@ -60,36 +62,19 @@ B站逻辑
 到头 生成gif）
 
 todo  MediaPlayer VideoView  B站，编译文件
+https://www.jianshu.com/p/c5d972ab0309 叫你如何编译
+https://github.com/thiagooo0/lmnplayer   他编译好的
+
+todo 需要的话就学 surfaceView  SurfaceTexture(能对surface的图片进行。opengl的滤镜)
+
+grafika 项目能学习更多多媒体知识
 
 todo  金山云直播 sdk接入尝试；
 
-todo 需要的话就学 surfaceView  等相关的类
- ========================近期目标 ==========================
-
- ========================面试目标 ==========================
- 1.熟悉SDK中HTTP、JSON解析、SQL Lite；
- 2.对手机软件性能优化、内存优化有一定经验；
-
- 面试介绍：
- 经历
- -> 擅长的方面(自定义，绘图方面 录屏，录音 编解码方面)
- -> 插件编写，
- 框架封装---->{刷新,zbanner，adapter,
- 上拉与加载的翻页帮助库(联动 刷新与adapter)
- http(retrofit 做了一个请求是联动一个 网络布局库（三种状态断网 在线，网络失败))
- 事件总线（eventbus）  图片（glide）
-}
-
- 能用APT，动态代理
-
-
-
-
-
 todo AndroidLiveRecord  openGLEncode openGLEncode
-
 
 todo  文件操作 假如写入的MP4 文件，未完成的时候结尾用temp,完结回归改成.mp4
 这样我检查的时候 看看.mp4是否纯在就可以判断操作是否完成了
 
 todo 动画库 与别人的接口相同， 如何支持别人的？ 适配器吗？ 最好的办法 就是导入他的库 实际使用一次！
+

@@ -71,13 +71,14 @@ public class WAVtoMp4Activity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_muxer);
         ButterKnife.bind(this);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                RawUtils.copyFilesFromAssset(WAVtoMp4Activity.this,
-                        MP3NAMe, mp3.getAbsolutePath());
-            }
-        }).start();
+        if (!mp3.exists())
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    RawUtils.copyFilesFromAssset(WAVtoMp4Activity.this,
+                            MP3NAMe, mp3.getAbsolutePath());
+                }
+            }).start();
     }
 
     @NonNull
@@ -105,6 +106,8 @@ public class WAVtoMp4Activity extends Activity {
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     @OnClick(R.id.bt_muxer)
     public void onViewClicked() {
+        if (!mp3.exists())
+            ToastUtils.showShort(this, "文件未保存入sd卡 请稍后!");
         MediaFormat mediaFormat = getFormat();
         try {
             mMediaMuxer = new MediaMuxer(muxer.getAbsolutePath(),

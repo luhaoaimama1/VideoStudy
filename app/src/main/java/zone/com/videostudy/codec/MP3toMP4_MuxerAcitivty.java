@@ -42,7 +42,7 @@ import zone.com.videostudy.utils.RawUtils;
  * Copyright (c) [2018] [Zone]
  */
 public class MP3toMP4_MuxerAcitivty extends Activity {
-    private static final String LOGTAG = "MP3toAACAcitivty";
+    private static final String TAG = "MP3toMP4";
 
 
     final String MP3NAMe = "record_asset.wav";
@@ -54,7 +54,6 @@ public class MP3toMP4_MuxerAcitivty extends Activity {
     @Bind(R.id.video)
     VideoView videoView;
     private MediaCodecHelper helper, helper2;
-    private AudioTrack audioTrack;
     private byte[] mAudioOutTempBuf;
     private MediaMuxer mMediaMuxer;
 
@@ -80,8 +79,8 @@ public class MP3toMP4_MuxerAcitivty extends Activity {
 
     @OnClick(R.id.bt_muxer)
     public void onViewClicked() {
-        if (!SharedUtils.get("exist", false))
-            ToastUtils.showShort(this, "文件未保存入sd卡");
+        if (!mp4.exists()&&!mp3.exists())
+            ToastUtils.showShort(this, "文件未保存入sd卡  请稍后!");
         muxerMedia();
     }
 
@@ -151,14 +150,13 @@ public class MP3toMP4_MuxerAcitivty extends Activity {
                             @Override
                             public void onOutputFormatChanged(@NonNull MediaCodec codec, @NonNull MediaFormat format) {
                                 format = codec.getOutputFormat();
-                                Log.v(LOGTAG, "Output format changed - " + format);
+                                Log.v(TAG, "Output format changed - " + format);
                                 audioTrackIdx = mMediaMuxer.addTrack(format);
                                 mMediaMuxer.start();
                             }
                         }
                 ).prepare();
 
-//        audioTrack = AudioTrackUtils.getAudioTrackByFormat(wrapper.format);
 
         wrapper.extractor.unselectTrack(wrapper.trackIndex);
         wrapper.extractor.selectTrack(wrapper.trackIndex);

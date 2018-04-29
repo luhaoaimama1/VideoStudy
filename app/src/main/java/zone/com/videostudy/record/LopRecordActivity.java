@@ -42,11 +42,10 @@ public class LopRecordActivity extends Activity {
     /**
      * 是否开启音频录制
      */
-    private boolean isAudio = true;
+    private boolean isAudio = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // TODO Auto-generated method stub  
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_lop_media);
 
@@ -68,7 +67,6 @@ public class LopRecordActivity extends Activity {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub  
                 if (isStarted) {
                     stopScreenRecording();
                     statusIsStoped();
@@ -119,10 +117,10 @@ public class LopRecordActivity extends Activity {
 
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                // TODO Auto-generated method stub  
                 isAudio = isChecked;
             }
         });
+        audioBox.performClick();
     }
 
     /**
@@ -141,7 +139,6 @@ public class LopRecordActivity extends Activity {
 
     @Override
     protected void onSaveInstanceState(Bundle outState) {
-        // TODO Auto-generated method stub  
         super.onSaveInstanceState(outState);
         outState.putBoolean(RECORD_STATUS, isStarted);
     }
@@ -158,6 +155,8 @@ public class LopRecordActivity extends Activity {
                 Intent service = new Intent(LopRecordActivity.this,
                         getOpenServiceCls());
                 params.writeExtra(service);
+                service.putExtra("quality",isVideoSd);
+                service.putExtra("audio",isAudio);
                 startService(service);
                 // 已经开始屏幕录制，修改UI状态
                 isStarted = !isStarted;
@@ -199,16 +198,6 @@ public class LopRecordActivity extends Activity {
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         intent.addCategory(Intent.CATEGORY_HOME);
         this.startActivity(intent);
-    }
-
-    @Override
-    public boolean onKeyDown(int keyCode, KeyEvent event) {
-        // 在这里将BACK键模拟了HOME键的返回桌面功能（并无必要）
-        if (keyCode == KeyEvent.KEYCODE_BACK) {
-            simulateHome();
-            return true;
-        }
-        return super.onKeyDown(keyCode, event);
     }
 
 }  

@@ -11,6 +11,7 @@ import and.Configuration;
 import zone.com.videostudy.audiomedia.RecordingActivity;
 import zone.com.videostudy.audiomedia.RecordingAudioActivity;
 import zone.com.videostudy.codec.DecodeMP4Activity;
+import zone.com.videostudy.codec.EncodeTextureActivity;
 import zone.com.videostudy.codec.MP3toAAC_FileAcitivty;
 import zone.com.videostudy.codec.WAVtoMp4Activity;
 import zone.com.videostudy.codec.EncodeSurfaceActivity;
@@ -83,6 +84,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.bt_encode_surface:
                 startActivity(new Intent(this, EncodeSurfaceActivity.class));
+                break;
+            case R.id.bt_TextureView:
+                startActivity(new Intent(this, EncodeTextureActivity.class));
                 break;
             case R.id.bt_mp4_decode:
                 startActivity(new Intent(this, DecodeMP4Activity.class));

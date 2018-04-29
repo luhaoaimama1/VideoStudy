@@ -111,6 +111,19 @@
             android:layout_height="wrap_content"
             android:onClick="onClick"
             android:text="mp4解码" />
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#D7F679"
+            android:gravity="center"
+            android:padding="10dp"
+            android:text="OpenGL相关" />
+        <Button
+            android:id="@+id/bt_TextureView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:onClick="onClick"
+            android:text="TextureView'sDemo" />
 
         <TextView
             android:layout_width="match_parent"
@@ -119,6 +132,7 @@
             android:gravity="center"
             android:padding="10dp"
             android:text="todo" />
+
 
         <Button
             android:id="@+id/mediaPlayer"

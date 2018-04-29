@@ -61,23 +61,22 @@ public class MP3toAAC_FileAcitivty extends Activity {
         setContentView(R.layout.a_muxer);
         ButterKnife.bind(this);
 
-
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                RawUtils.copyFilesFromAssset(MP3toAAC_FileAcitivty.this,
-                        MP3NAMe, mp3.getAbsolutePath());
-                RawUtils.copyFilesFromAssset(MP3toAAC_FileAcitivty.this,
-                        MP4NAME, mp4.getAbsolutePath());
-                SharedUtils.put("exist", true);
-            }
-        }).start();
+        if (!mp4.exists() && !mp3.exists())
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    RawUtils.copyFilesFromAssset(MP3toAAC_FileAcitivty.this,
+                            MP3NAMe, mp3.getAbsolutePath());
+                    RawUtils.copyFilesFromAssset(MP3toAAC_FileAcitivty.this,
+                            MP4NAME, mp4.getAbsolutePath());
+                }
+            }).start();
     }
 
     @OnClick(R.id.bt_muxer)
     public void onViewClicked() {
-        if (!SharedUtils.get("exist", false))
-            ToastUtils.showShort(this, "文件未保存入sd卡");
+        if (!mp4.exists() && !mp3.exists())
+            ToastUtils.showShort(this, "文件未保存入sd卡  请稍后!");
         muxerMedia();
     }
 

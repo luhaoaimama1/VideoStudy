@@ -43,6 +43,10 @@
         <activity android:name=".codec.Extract2MuxerActivity"></activity>
         <activity android:name=".codec.RecordAudioToAAcActivity"></activity>
         <activity android:name=".codec.EncodeSurfaceActivity"></activity>
+        <activity
+            android:name=".codec.EncodeTextureActivity"
+            android:hardwareAccelerated="true"></activity>
+
         <activity android:name=".codec.MP3toMP4_MuxerAcitivty"></activity>
         <activity android:name=".codec.MP3toAAC_FileAcitivty"></activity>
         <activity android:name=".codec.WAVtoMp4Activity"></activity>

@@ -46,7 +46,6 @@ public class ScreenRecordMuxerService extends Service {
     public MediaFormat forMat, audioFormat;
     private Surface surface;
     private MediaMuxer mMediaMuxer;
-    MediaRecorderHelper mediaRecorderHelper;
     File mp4 = FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", "record_lopipMuxer.mp4");
     public int videoMuxTrack = -1, audioMuxTrack = -1;
     public boolean audioEncodeOver = false, videoEncodeOver = false;
@@ -67,7 +66,7 @@ public class ScreenRecordMuxerService extends Service {
 
 
         isVideoSd = intent.getBooleanExtra("quality", true);
-        isAudio = intent.getBooleanExtra("audio", true);
+        isAudio = intent.getBooleanExtra("audio", false);
 
         mediaProjectionHelper.startRecord(this, vdp = VirtualDisplayParams.readExtra(intent), new MediaProjectionHelper.Recorder.RecordNeed() {
 
@@ -79,7 +78,8 @@ public class ScreenRecordMuxerService extends Service {
                     mMediaMuxer = new MediaMuxer(muxer.getAbsolutePath(),
                             MediaMuxer.OutputFormat.MUXER_OUTPUT_MPEG_4);
                     videoCodec();
-                    audioCodec();
+                    if (isAudio)
+                        audioCodec();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -93,7 +93,8 @@ public class ScreenRecordMuxerService extends Service {
 
     private void toStop() {
         videoHelper.signalEndOfInputStream();
-        mAudioRecorder.stop();
+        if (isAudio)
+            mAudioRecorder.stop();
     }
 
     private AudioRecorder mAudioRecorder = new AudioRecorder();
@@ -165,8 +166,15 @@ public class ScreenRecordMuxerService extends Service {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void pushMuxer(@NonNull MediaCodec.BufferInfo info, ByteBuffer byteBuffer, int muxTrack) {
-        if (videoMuxTrack != -1 && audioMuxTrack != -1)
-            mMediaMuxer.writeSampleData(muxTrack, byteBuffer, info);
+        if (isAudio) {
+            if (videoMuxTrack != -1 && audioMuxTrack != -1)
+                mMediaMuxer.writeSampleData(muxTrack, byteBuffer, info);
+        } else {
+            if (videoMuxTrack != -1)
+                mMediaMuxer.writeSampleData(muxTrack, byteBuffer, info);
+        }
+
+
     }
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
@@ -201,7 +209,9 @@ public class ScreenRecordMuxerService extends Service {
 
 
     private void videoCodec() throws IOException {
-        forMat = MediaFormatEs.Video.H264().screen(vdp.width, vdp.height).safeCheck().getFormat();
+        forMat = MediaFormatEs.Video.H264().screen(vdp.width, vdp.height)
+                .bitRate(isVideoSd?MediaFormatEs.Quality.HIGH:MediaFormatEs.Quality.LOW)
+                .safeCheck().getFormat();
         videoHelper = MediaCodecHelper.encode(forMat)
                 .intputSurface(new MediaCodecHelper.IntputSurface() {
                     @Override
@@ -247,18 +257,32 @@ public class ScreenRecordMuxerService extends Service {
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void muxerStart() {
-        if (videoMuxTrack != -1 && audioMuxTrack != -1)
-            mMediaMuxer.start();
+        if (isAudio) {
+            if (videoMuxTrack != -1 && audioMuxTrack != -1)
+                mMediaMuxer.start();
+        } else {
+            if (videoMuxTrack != -1)
+                mMediaMuxer.start();
+        }
+
+
     }
 
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
     private void release() {
-        if (!(audioEncodeOver && videoEncodeOver))
-            return;
+
+        if (isAudio) {
+            if (!(audioEncodeOver && videoEncodeOver))
+                return;
+        } else {
+            if (!videoEncodeOver)
+                return;
+        }
 
         videoHelper.release();
-        audioHelper.release();
+        if (isAudio)
+            audioHelper.release();
 
         try {
             mMediaMuxer.stop();

@@ -17,6 +17,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
+import and.utils.activity_fragment_ui.ToastUtils;
 import and.utils.data.file2io2data.FileUtils;
 import and.utils.data.file2io2data.SDCardUtils;
 import butterknife.Bind;
@@ -52,22 +53,28 @@ public class DecodeMP4Activity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_decode_mp4);
         ButterKnife.bind(this);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                RawUtils.copyFilesFromAssset(DecodeMP4Activity.this,
-                        MP4NAME, mp4.getAbsolutePath());
-                RawUtils.copyFilesFromAssset(DecodeMP4Activity.this,
-                        MP5NAME, mp5.getAbsolutePath());
-            }
-        }).start();
+        if (!mp4.exists() && !mp5.exists())
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    RawUtils.copyFilesFromAssset(DecodeMP4Activity.this,
+                            MP4NAME, mp4.getAbsolutePath());
+                    RawUtils.copyFilesFromAssset(DecodeMP4Activity.this,
+                            MP5NAME, mp5.getAbsolutePath());
+                }
+            }).start();
     }
 
     @OnClick(R.id.bt_decode)
     public void onViewClicked() {
+        if (!mp4.exists() && !mp5.exists())
+            ToastUtils.showShort(this, "文件未保存入sd卡  请稍后!");
+
+
         initMediaCodec();
         initMediaCodecAudio();
     }
+
     @OnClick(R.id.bt_decode_quit)
     public void onViewClicked2() {
         videoHelper.forcedQuit();

@@ -58,7 +58,7 @@ public class Extract2MuxerActivity extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.a_muxer);
         ButterKnife.bind(this);
-
+        if (!mp4.exists()&&!mp4_2.exists())
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -72,8 +72,9 @@ public class Extract2MuxerActivity extends Activity {
 
     @OnClick(R.id.bt_muxer)
     public void onViewClicked() {
-        if (!SharedUtils.get("exist", false))
-            ToastUtils.showShort(this, "文件未保存入sd卡");
+        if (!mp4.exists()&&!mp4_2.exists())
+            ToastUtils.showShort(this, "文件未保存入sd卡  请稍后!");
+
         muxerMedia();
     }
 
