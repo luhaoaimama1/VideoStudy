@@ -14,11 +14,14 @@ import android.widget.Button;
 import android.widget.MediaController;
 import android.widget.VideoView;
 
+import java.io.File;
 import java.io.IOException;
 
 import and.utils.data.file2io2data.FileUtils;
 import and.utils.data.file2io2data.SDCardUtils;
 import zone.com.videostudy.R;
+
+import static zone.com.videostudy.MainActivity.MP5NAME;
 
 //TODO 在线播放原理和音频在线播放一样
 public class VideoActivity extends AppCompatActivity implements View.OnClickListener {
@@ -28,8 +31,7 @@ public class VideoActivity extends AppCompatActivity implements View.OnClickList
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        videoUri = Uri.fromFile(FileUtils.getFile(SDCardUtils.getSDCardDir(),
-                "面具男鬼步舞教程6个基本动作鬼步舞音乐 高清.mp4"));
+        videoUri = Uri.fromFile(FileUtils.getFile(SDCardUtils.getSDCardDir(), "VideoStudyHei", MP5NAME));
         String type = getIntent().getStringExtra("type");
         if ("video".equals(type))
             videoMode();
