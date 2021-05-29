@@ -231,7 +231,8 @@ public class RecordAudioToAAcActivity extends Activity {
     private MediaFormat getFormat() {
         AudioRecordConfig config = mAudioRecorder.getAudioRecordConfig();
         MediaFormat mediaFormat = new MediaFormat();
-        mediaFormat.setString(MediaFormat.KEY_MIME, "audio/mp4a-latm");
+//        mediaFormat.setString(MediaFormat.KEY_MIME, "audio/mp4a-latm");
+        mediaFormat.setString(MediaFormat.KEY_MIME, MediaFormat.MIMETYPE_AUDIO_AAC);
 //        mediaFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, config.getChannelConfig());
         mediaFormat.setInteger(MediaFormat.KEY_CHANNEL_COUNT, 1);
         mediaFormat.setInteger(MediaFormat.KEY_SAMPLE_RATE, config.getSampleRate());

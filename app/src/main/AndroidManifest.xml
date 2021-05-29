@@ -51,6 +51,7 @@
         <activity android:name=".codec.MP3toAAC_FileAcitivty"></activity>
         <activity android:name=".codec.WAVtoMp4Activity"></activity>
         <activity android:name=".codec.DecodeMP4Activity"></activity>
+        <activity android:name=".codec.WjRecordPlayActivity"></activity>
         <activity android:name=".audiomedia.RecordingAudioActivity"></activity>
         <activity android:name=".video.VideoRecordActivity"></activity>
         <activity android:name=".record.LopRecordActivity"></activity>

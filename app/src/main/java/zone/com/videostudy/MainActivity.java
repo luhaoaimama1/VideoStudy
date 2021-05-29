@@ -26,6 +26,7 @@ import zone.com.videostudy.codec.EncodeSurfaceActivity;
 import zone.com.videostudy.codec.Extract2MuxerActivity;
 import zone.com.videostudy.codec.MP3toMP4_MuxerAcitivty;
 import zone.com.videostudy.codec.RecordAudioToAAcActivity;
+import zone.com.videostudy.codec.WjRecordPlayActivity;
 import zone.com.videostudy.record.CaptureActivity;
 import zone.com.videostudy.record.LopRecordActivity;
 import zone.com.videostudy.utils.RawUtils;
@@ -34,6 +35,7 @@ import zone.com.videostudy.video.VideoRecordActivity;
 
 import static butterknife.ButterKnife.Finder.arrayOf;
 
+//todo android:visibility="gone" 的后期有机会处理
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
 
     //申请录音权限
@@ -56,7 +58,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         WindowManager wm = (WindowManager) getSystemService(Context.WINDOW_SERVICE);
         windowWidth = wm.getDefaultDisplay().getWidth();
         windowHeight = wm.getDefaultDisplay().getHeight();
-        ActivityCompat.requestPermissions(MainActivity.this,PERMISSION_AUDIO, 1);
+        ActivityCompat.requestPermissions(MainActivity.this, PERMISSION_AUDIO, 1);
 
         if (!mp5.exists())
             new Thread(new Runnable() {
@@ -129,6 +131,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
             case R.id.bt_mp4_decode:
                 startActivity(new Intent(this, DecodeMP4Activity.class));
+                break;
+            case R.id.bt_wj:
+                startActivity(new Intent(this, WjRecordPlayActivity.class));
                 break;
         }
 

@@ -19,7 +19,8 @@ public class RecordingActivity extends Activity {
     private Button Stop;
     private MediaRecorderHandler recoder;
 
-    private static final String MusicUrl="http://abv.cn/music/光辉岁月.mp3";
+//    private static final String MusicUrl="http://abv.cn/music/光辉岁月.mp3";
+    private static final String MusicUrl="https://github.com/luhaoaimama1/HexoPics/blob/master/abc.mp3";
     private Player player;
 
     @Override
